@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SGO Digital - Layout Original</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --sgo-red: #d32f2f;
+      --sgo-green: #2e7d32;
+      --sgo-blue: #1565c0;
+      --border: #000;
+    }
+    * { box-sizing: border-box; font-family: "Arial Narrow", Arial, sans-serif; }
+    body { margin: 0; background: #e0e0e0; color: #000; }
+    
+    /* Interface de App */
+    header { background: #333; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .btn { border: 1px solid #fff; padding: 6px 12px; cursor: pointer; background: transparent; color: #fff; font-weight: bold; text-transform: uppercase; font-size: 11px; }
+    .btn-primary { background: var(--sgo-red); border-color: var(--sgo-red); }
+
+    .wrap { max-width: 900px; margin: 15px auto; padding: 0 10px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* Menu Inicial */
+    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .menu-btn { background: #fff; border: 2px solid #000; padding: 25px; text-align: center; cursor: pointer; font-weight: 900; text-transform: uppercase; }
+
+    /* LAYOUT FICHA ORIGINAL */
+    .sheet { background: #fff; border: 2px solid #000; padding: 15px; position: relative; box-shadow: 4px 4px 0px rgba(0,0,0,0.1); }
+    .sheet-header { border-bottom: 2px solid #000; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .sheet-title { font-size: 19px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: -0.5px; }
+    
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 0; border: 1px solid #000; }
+    .cell { border: 0.5px solid #000; padding: 3px 5px; display: flex; flex-direction: column; }
+    .cell label { font-size: 9px; font-weight: 900; text-transform: uppercase; color: #000; margin-bottom: 1px; }
+    .cell input, .cell textarea { border: none; outline: none; width: 100%; font-size: 13px; font-weight: bold; padding: 2px 0; background: transparent; }
+    
+    .row-title { grid-column: span 12; background: #ddd; font-weight: 900; font-size: 11px; padding: 2px 8px; border: 0.5px solid #000; text-transform: uppercase; }
+    
+    /* Indicadores de Cor Laterais (Igual ao Original) */
+    .sec-estou { border-left: 10px solid var(--sgo-blue); }
+    .sec-vejo { border-left: 10px solid var(--sgo-green); }
+    .sec-faco { border-left: 10px solid var(--sgo-red); }
+
+    /* Área de Fotos */
+    .photo-area { grid-column: span 12; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: #f9f9f9; border-top: 1px solid #000; }
+    .photo-item { width: 100%; aspect-ratio: 4/3; object-fit: cover; border: 0.5px solid #000; }
+
+    .upload-zone { background: #fff; border: 2px dashed #000; padding: 10px; margin-bottom: 10px; text-align: center; }
+
+    /* Utilitários Grelha */
+    .w2 { grid-column: span 2; } .w3 { grid-column: span 3; } .w4 { grid-column: span 4; } 
+    .w6 { grid-column: span 6; } .w8 { grid-column: span 8; } .w9 { grid-column: span 9; } .w12 { grid-column: span 12; }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff; }
+      .sheet { box-shadow: none; border: 2px solid #000; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="no-print">
+  <div id="headerTitle"><strong>SGO DIGITAL</strong></div>
+  <div id="navBtns" style="display:none;">
+    <button class="btn" onclick="goHome()">Menu</button>
+    <button class="btn btn-primary" onclick="exportJPG()">Exportar JPG</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="home" class="screen active">
+    <div class="menu-grid">
+      <div class="menu-btn" style="border-bottom: 6px solid var(--sgo-green);" onclick="openSheet('Incêndios Florestais')">Incêndios Florestais</div>
+      <div class="menu-btn" style="border-bottom: 6px solid var(--sgo-red);" onclick="openSheet('Incêndios Estruturais')">Incêndios Estruturais</div>
+      <div class="menu-btn" style="border-bottom: 6px solid #444;" onclick="openSheet('Acidentes Rodoviários')">Acidentes Rodoviários</div>
+      <div class="menu-btn" style="border-bottom: 6px solid orange;" onclick="openSheet('Matérias Perigosas')">NRBQ-Matérias Perigosas</div>
+    </div>
+  </div>
+
+  <div id="editor" class="screen">
+    <div class="upload-zone no-print">
+      <input type="file" id="camInput" accept="image/*" multiple capture="environment" style="display:none">
+      <button class="btn" style="background:#000;" onclick="document.getElementById('camInput').click()">📷 TIRAR FOTO / ANEXAR</button>
+    </div>
+
+    <div id="fichaFinal" class="sheet">
+      <div class="sheet-header">
+        <h1 class="sheet-title" id="tipoFicha">GUIA DE COMANDO</h1>
+        <div style="font-size:9px; font-weight:900;">SISTEMA DE GESTÃO DE OPERAÇÕES</div>
+      </div>
+
+      <div class="grid">
+        <div class="cell w3"><label>Ocorrência Nº</label><input type="text"></div>
+        <div class="cell w3"><label>Canal Manobra</label><input type="text"></div>
+        <div class="cell w3"><label>Hr Posit</label><input type="time"></div>
+        <div class="cell w3"><label>Data</label><input type="date"></div>
+
+        <div class="row-title" style="color:var(--sgo-blue)">Localização (ESTOU)</div>
+        <div class="cell w9 sec-estou"><label>Estou em (Local/Estrada/KM)</label><input type="text"></div>
+        <div class="cell w3 sec-estou"><label>Freguesia</label><input type="text"></div>
+        <div class="cell w12 sec-estou"><label>Coordenadas (WGS84)</label><input type="text" placeholder="N __º __' __'' W __º __' __''"></div>
+
+        <div class="row-title" style="color:var(--sgo-green)">Informações (VEJO)</div>
+        <div class="cell w12 sec-vejo">
+          <label>Ponto de Situação Inicial / Reconhecimento</label>
+          <textarea rows="4"></textarea>
+        </div>
+
+        <div class="row-title" style="color:var(--sgo-red)">Plano de Ação (FAÇO / PEÇO)</div>
+        <div class="cell w6 sec-faco"><label>Estratégia / Tática</label><textarea rows="3"></textarea></div>
+        <div class="cell w6 sec-faco"><label>Reforços Solicitados</label><textarea rows="3"></textarea></div>
+
+        <div class="row-title">Registos Fotográficos / Evidências</div>
+        <div id="photoPreview" class="photo-area">
+          </div>
+
+        <div class="cell w8"><label>Assumo COS (Nome e Categoria)</label><input type="text"></div>
+        <div class="cell w4"><label>Entidade</label><input type="text"></div>
+      </div>
+      
+      <div style="margin-top:8px; font-size:8px; font-weight:bold; display:flex; justify-content:space-between;">
+        <span>SGO - GUIA DE COMANDO DIGITAL</span>
+        <span>MOD. SGO - 2024</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openSheet(titulo) {
+    document.getElementById('home').classList.remove('active');
+    document.getElementById('editor').classList.add('active');
+    document.getElementById('navBtns').style.display = 'block';
+    document.getElementById('tipoFicha').innerText = titulo;
+    document.getElementById('photoPreview').innerHTML = '';
+    window.scrollTo(0,0);
+  }
+
+  function goHome() {
+    if(confirm("Sair da ficha atual?")){
+      location.reload();
+    }
+  }
+
+  document.getElementById('camInput').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = document.createElement('img');
+        img.src = event.target.result;
+        img.className = 'photo-item';
+        document.getElementById('photoPreview').appendChild(img);
+      }
+      reader.readAsDataURL(file);
+    });
+  });
+
+  async function exportJPG() {
+    const ficha = document.getElementById('fichaFinal');
+    const canvas = await html2canvas(ficha, { scale: 2 });
+    const link = document.createElement('a');
+    link.download = 'SGO_Ficha.jpg';
+    link.href = canvas.toDataURL('image/jpeg', 0.9);
+    link.click();
+  }
+</script>
+</body>
+</html>
