@@ -1,1059 +1,1039 @@
 <!doctype html>
 <html lang="pt">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SGO Digital – Guias de Comando</title>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Arial Narrow", Arial, sans-serif; font-size: 11px; background: #c8c8c8; color: #000; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SGO Digital – Guias de Comando</title>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Arial Narrow",Arial,sans-serif;font-size:11px;background:#b0b0b0;color:#000}
 
-    /* ── APP CHROME ── */
-    header {
-      position: sticky; top: 0; z-index: 200;
-      background: #1a1a1a; color: #fff;
-      padding: 7px 14px; display: flex; justify-content: space-between; align-items: center;
-    }
-    .hbtn {
-      cursor: pointer; background: transparent; color: #fff;
-      border: 1.5px solid #666; padding: 5px 13px;
-      font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase;
-    }
-    .hbtn-red { background: #c62828; border-color: #c62828; }
-    .hnav { display: flex; gap: 7px; }
+header{position:sticky;top:0;z-index:300;background:#1c1c1c;color:#fff;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+header strong{font-size:13px;letter-spacing:1px;text-transform:uppercase}
+.hbtn{cursor:pointer;background:transparent;color:#fff;border:1.5px solid #555;padding:5px 12px;font-family:inherit;font-size:11px;font-weight:700;text-transform:uppercase}
+.hbtn:hover{background:#333}
+.hbtn-red{background:#c62828;border-color:#c62828}
+.hnav{display:flex;gap:6px;flex-wrap:wrap}
 
-    .wrap { max-width: 1080px; margin: 12px auto; padding: 0 8px; }
-    .screen { display: none; }
-    .screen.active { display: block; }
+.wrap{max-width:1140px;margin:14px auto;padding:0 10px}
+.screen{display:none}.screen.active{display:block}
 
-    /* ── HOME ── */
-    .mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .mcard {
-      background: #fff; border: 2px solid #111;
-      padding: 28px 16px; text-align: center; cursor: pointer;
-      font-weight: 900; text-transform: uppercase; font-size: 13px;
-      font-family: inherit; user-select: none; letter-spacing: .3px;
-    }
-    .mcard:active { opacity: .82; }
+/* HOME */
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:620px;margin:0 auto}
+.mcard{background:#fff;border:3px solid #111;padding:30px 18px;text-align:center;cursor:pointer;font-weight:900;text-transform:uppercase;font-size:13px;font-family:inherit;user-select:none;letter-spacing:.4px;transition:transform .1s,box-shadow .1s}
+.mcard:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.mcard-icon{font-size:26px;display:block;margin-bottom:7px}
 
-    /* ── SHEET OUTER FRAME ── */
-    .sgo-sheet {
-      background: #fff; border: 2px solid #000;
-      display: none; /* shown by JS */
-      grid-template-columns: 58fr 42fr;
-    }
-    .sgo-sheet.vis { display: grid; }
-    .sl { } /* sheet-left */
-    .sr { border-left: 2px solid #000; display: flex; flex-direction: column; } /* sheet-right */
+/* TOOLBAR */
+.toolbar{background:#2a2a2a;padding:5px 10px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;border-bottom:2px solid #444}
+.tlbl{color:#aaa;font-size:9px;text-transform:uppercase;letter-spacing:.5px;margin-right:3px}
 
-    /* ── TITLE HEADER ── */
-    .sht { text-align: center; padding: 6px 8px; border-bottom: 1px solid #000; }
-    .sht-main { font-size: 14px; font-weight: 900; }
-    .sht-sub  { font-size: 10px; }
-    .sht-type { font-size: 13px; font-weight: 900; }
+/* SHEET */
+.sgo-sheet{background:#fff;border:2px solid #000;display:none;grid-template-columns:60fr 40fr;min-height:560px}
+.sgo-sheet.vis{display:grid}
 
-    /* ── BARS ── */
-    .bar { font-weight: 900; font-size: 11px; padding: 3px 6px; border-bottom: 0.5px solid #000; }
-    .bar-blue   { background: #1a237e; color: #fff; text-align: center; }
-    .bar-yellow { background: #fdd835; }
-    .bar-yrow   { background: #fdd835; display: grid; gap: 0; border-bottom: 0.5px solid #000; }
+/* HEADERS */
+.hdr-strip{text-align:center;padding:5px 8px}
+.hdr-main{font-size:13px;font-weight:900}
+.hdr-sub{font-size:10px;font-weight:400;margin:1px 0}
+.hdr-type{font-size:14px;font-weight:900;letter-spacing:.4px}
+.bar-blue{background:#1a237e;color:#fff;font-weight:900;font-size:10px;padding:3px 7px;text-align:center}
+.bar-yellow{background:#fdd835}
 
-    /* ── FORM TABLE ── */
-    .ft { border-collapse: collapse; width: 100%; }
-    .ft td { border: 0.5px solid #000; vertical-align: middle; padding: 0; }
+/* FORM TABLE */
+.ft{border-collapse:collapse;width:100%}
+.ft td{border:0.5px solid #555;vertical-align:middle;padding:0}
 
-    /* ── SECTION LABELS (vertical) ── */
-    .slbl {
-      writing-mode: vertical-lr; transform: rotate(180deg);
-      text-align: center; font-weight: 900; font-size: 10px;
-      padding: 4px 2px; white-space: nowrap; width: 18px;
-    }
-    .sl-estou    { background: #fdd835; }
-    .sl-vejo     { background: #b71c1c; color: #fff; }
-    .sl-faco     { background: #1565c0; color: #fff; }
-    .sl-solicito { background: #2e7d32; color: #fff; }
-    .sl-peco     { background: #2e7d32; color: #fff; }
+/* VERTICAL SECTION LABELS */
+.slbl{writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-weight:900;font-size:9px;padding:4px 2px;white-space:nowrap;width:16px;letter-spacing:.5px}
+.sl-estou   {background:#fdd835;color:#000}
+.sl-vejo    {background:#b71c1c;color:#fff}
+.sl-faco    {background:#1565c0;color:#fff}
+.sl-peco    {background:#2e7d32;color:#fff}
+.sl-solicito{background:#2e7d32;color:#fff}
 
-    /* ── FIELD LABEL + INPUT ── */
-    .lbl { font-size: 8px; font-weight: 900; text-transform: uppercase; display: block; padding: 1px 4px 0; color: #444; }
-    .fi  { border: none; outline: none; width: 100%; font-size: 12px; font-weight: bold; padding: 1px 4px 2px; background: transparent; font-family: inherit; }
-    .fi-sm { font-size: 11px; }
-    .fi-il { border: none; border-bottom: 1px solid #555; outline: none; font-size: 11px; font-weight: bold; text-align: center; background: transparent; font-family: inherit; padding: 0 2px; }
+/* FIELDS */
+.fc{padding:1px 4px}
+.lbl{font-size:8px;font-weight:900;text-transform:uppercase;color:#555;display:block;padding-top:1px;line-height:1.2}
+input[type=text],input[type=time],input[type=number],textarea{border:none;outline:none;width:100%;font-size:11px;font-weight:700;font-family:inherit;background:transparent;padding:1px 3px;color:#000}
+input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:focus{background:#fffde7}
+.fi-il{border:none;border-bottom:1px solid #777;outline:none;font-size:11px;font-weight:700;font-family:inherit;background:transparent;padding:0 2px;text-align:center}
+.fi-il:focus{background:#fffde7}
 
-    /* ── CHECKBOX OPTIONS ── */
-    .copt {
-      display: inline-flex; align-items: center; gap: 4px;
-      border: 1px solid #555; padding: 2px 6px 2px 4px;
-      cursor: pointer; font-size: 10px; font-weight: 700;
-      user-select: none; white-space: nowrap; margin: 1px 1px;
-    }
-    .copt::before {
-      content: ""; display: inline-block;
-      width: 11px; height: 11px; border: 1.5px solid #555;
-      background: #fff; flex-shrink: 0;
-    }
-    .copt.on { font-weight: 900; }
-    .copt.on::before { background: #111; border-color: #111; }
+/* GRIDS */
+.grow{display:grid}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.gr-b{border-right:0.5px solid #555}
+.gr-bb{border-bottom:0.5px solid #555}
 
-    /* Color variants */
-    .co-r  { background: #ffebee; } .co-r.on  { background: #c62828; color: #fff; }
-    .co-g  { background: #e8f5e9; } .co-g.on  { background: #1b5e20; color: #fff; }
-    .co-b  { background: #e3f2fd; } .co-b.on  { background: #0d47a1; color: #fff; }
-    .co-y  { background: #fffde7; } .co-y.on  { background: #f9a825; }
-    .co-o  { background: #fff3e0; } .co-o.on  { background: #e65100; color: #fff; }
-    .co-br { background: #efebe9; } .co-br.on { background: #5d4037; color: #fff; }
-    .co-pk { background: #fce4ec; } .co-pk.on { background: #880e4f; color: #fff; }
-    .co-t  { background: #e0f2f1; } .co-t.on  { background: #006064; color: #fff; }
-    .co-r.on::before,.co-g.on::before,.co-b.on::before,.co-o.on::before,.co-br.on::before,.co-pk.on::before,.co-t.on::before
-      { border-color: rgba(255,255,255,.6); background: rgba(255,255,255,.25); }
+/* INNER ROW LABEL */
+.rlbl{display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px;text-align:center;padding:2px 4px;line-height:1.2;border-right:0.5px solid #555}
 
-    /* ── CONTENT CELLS ── */
-    .cc { padding: 2px 4px; }           /* basic content cell */
-    .cb { padding: 2px 3px; display: flex; flex-wrap: wrap; align-items: center; } /* checkbox container */
-    .clbl { font-weight: 900; font-size: 10px; display: flex; align-items: center; padding: 2px 5px; white-space: nowrap; }
+/* ── CHECKBOXES with ✓ checkmark ── */
+.cbox{
+  display:inline-flex;align-items:center;gap:3px;
+  border:1px solid #666;padding:2px 5px 2px 3px;
+  cursor:pointer;font-size:9.5px;font-weight:700;
+  user-select:none;white-space:nowrap;margin:2px 1px;line-height:1.3;
+  transition:background .12s,color .12s
+}
+.cbox::before{
+  content:"";display:inline-flex;align-items:center;justify-content:center;
+  width:11px;height:11px;min-width:11px;border:1.5px solid #666;
+  background:#fff;flex-shrink:0;border-radius:1px;
+  font-size:9px;font-weight:900;line-height:1;color:#000
+}
+.cbox.on::before{content:"✓";background:#111;border-color:#111;color:#fff}
+.cbox.on{font-weight:900}
 
-    /* ── ROW LABEL CELL ── */
-    .rlbl { font-weight: 900; font-size: 10px; display: flex; align-items: center; padding: 2px 5px; white-space: nowrap; border-right: 0.5px solid #000; }
+/* Colour variants */
+.cx-r  {background:#ffebee} .cx-r.on  {background:#c62828;color:#fff} .cx-r.on::before{background:#fff;color:#c62828;border-color:#c62828}
+.cx-g  {background:#e8f5e9} .cx-g.on  {background:#1b5e20;color:#fff} .cx-g.on::before{background:#fff;color:#1b5e20;border-color:#1b5e20}
+.cx-b  {background:#e3f2fd} .cx-b.on  {background:#0d47a1;color:#fff} .cx-b.on::before{background:#fff;color:#0d47a1;border-color:#0d47a1}
+.cx-y  {background:#fffde7} .cx-y.on  {background:#f9a825;color:#000} .cx-y.on::before{background:#333;color:#f9a825;border-color:#333}
+.cx-o  {background:#fff3e0} .cx-o.on  {background:#e65100;color:#fff} .cx-o.on::before{background:#fff;color:#e65100;border-color:#e65100}
+.cx-br {background:#efebe9} .cx-br.on {background:#5d4037;color:#fff} .cx-br.on::before{background:#fff;color:#5d4037;border-color:#5d4037}
+.cx-pk {background:#fce4ec} .cx-pk.on {background:#880e4f;color:#fff} .cx-pk.on::before{background:#fff;color:#880e4f;border-color:#880e4f}
+.cx-t  {background:#e0f2f1} .cx-t.on  {background:#006064;color:#fff} .cx-t.on::before{background:#fff;color:#006064;border-color:#006064}
 
-    /* ── SPLIT ROW (2 sub-columns) ── */
-    .srow { display: grid; }
-    .srow2 { grid-template-columns: 1fr 1fr; }
-    .srow3 { grid-template-columns: 1fr 1fr 1fr; }
-    .srow-b { border-right: 0.5px solid #000; }
+/* CHECKBOX ROW */
+.cbrow{display:flex;flex-wrap:wrap;align-items:center;padding:2px 3px;gap:0}
 
-    /* ── BOTTOM ROWS ── */
-    .row-assumo { background: #fdd835; padding: 3px 6px; font-weight: 900; display: flex; align-items: center; gap: 8px; border-top: 1px solid #000; }
-    .row-prossigo { background: #fdd835; padding: 4px 6px; font-weight: 900; text-align: center; font-size: 12px; letter-spacing: .5px; border-top: 0.5px solid #000; }
+/* BOTTOM */
+.row-assumo{background:#fdd835;padding:3px 7px;font-weight:900;display:flex;align-items:center;gap:8px;border-top:0.5px solid #777}
+.row-prossigo{background:#fdd835;padding:4px 7px;font-weight:900;text-align:center;font-size:11px;letter-spacing:.5px;border-top:0.5px solid #777}
 
-    /* ── RIGHT PANEL ── */
-    .rp-top { display: flex; min-height: 190px; flex: 1; }
-    .rp-inf { flex: 1; display: flex; flex-direction: column; border-bottom: 1px solid #000; }
-    .rp-stc { flex: 1; border-left: 1px solid #000; border-bottom: 1px solid #000; display: flex; flex-direction: column; }
-    .rp-hdr { background: #1a237e; color: #fff; font-weight: 900; font-size: 11px; padding: 2px 5px; }
-    .rp-lines { flex: 1; }
-    .rp-line { border-bottom: 0.5px solid #ccc; height: 22px; }
-    .rp-ta { border: none; outline: none; width: 100%; height: 100%; min-height: 80px; font-family: inherit; font-size: 11px; resize: none; background: transparent; padding: 3px; }
-    .rp-posit { border-bottom: 1px solid #000; }
-    .prow { display: grid; grid-template-columns: 52px 58px 1fr; border-bottom: 0.5px solid #000; }
-    .prow:last-child { border-bottom: none; }
-    .plbl { font-weight: 900; font-size: 10px; padding: 3px 5px; white-space: nowrap; }
-    .phrs { font-size: 10px; padding: 1px 3px; border-left: 0.5px solid #000; border-right: 0.5px solid #000; }
-    .ptxt { padding: 1px 4px; }
-    .rp-meios { flex: 1; }
-    .mt { border-collapse: collapse; width: 100%; }
-    .mt th,.mt td { border: 0.5px solid #000; font-size: 10px; padding: 2px 3px; }
-    .mt th { background: #1a237e; color: #fff; font-weight: 900; }
-    .mt td.ttime { border: none; outline: none; width: 50px; font-family: inherit; font-size: 10px; text-align: center; }
-    .rp-pass { border-top: 1px solid #000; padding: 3px 5px; font-size: 10px; background: #e0e0e0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+/* RIGHT PANEL */
+.sr{border-left:2px solid #000;display:flex;flex-direction:column}
+.rp-top{display:flex;min-height:200px;flex:1}
+.rp-inf{flex:1;display:flex;flex-direction:column;border-bottom:1px solid #000}
+.rp-stc{flex:1;border-left:1px solid #000;border-bottom:1px solid #000;display:flex;flex-direction:column;min-width:0}
+.rp-hdr{background:#1a237e;color:#fff;font-weight:900;font-size:10px;padding:2px 6px}
+.rp-line{border-bottom:0.5px solid #ccc;height:21px;display:block;width:100%}
+.rp-lines{flex:1;overflow:hidden}
+.rp-posit{border-bottom:1px solid #000}
+.prow{display:grid;grid-template-columns:62px 76px 1fr;border-bottom:0.5px solid #888;align-items:center;min-height:22px}
+.prow:last-child{border-bottom:none}
+.plbl{font-weight:900;font-size:9.5px;padding:2px 5px}
+.ptime{font-size:10px;border-left:0.5px solid #888;border-right:0.5px solid #888;padding:1px 3px;display:flex;align-items:center}
+.ptxt{padding:1px 4px}
+.rp-meios{display:flex;flex-direction:column}
+.mt{border-collapse:collapse;width:100%}
+.mt th,.mt td{border:0.5px solid #888;font-size:9.5px;padding:1px 3px}
+.mt th{background:#1a237e;color:#fff;font-weight:900;text-align:center}
+.mt td input{border:none;outline:none;width:100%;font-family:inherit;font-size:9.5px;background:transparent}
+.mt td input:focus{background:#fffde7}
+.rp-pass{border-top:1px solid #000;padding:3px 6px;font-size:9.5px;background:#e8e8e8;display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-weight:700}
 
-    /* ── PHOTOS ── */
-    .photo-area { display: grid; grid-template-columns: repeat(3,1fr); gap: 3px; padding: 4px; border-top: 0.5px solid #000; }
-    .photo-item { width: 100%; aspect-ratio: 4/3; object-fit: cover; border: 0.5px solid #000; display: block; }
-    .upload-zone { background: #fff; border: 2px dashed #888; padding: 8px; text-align: center; margin-bottom: 8px; }
+/* ── SITAC CANVAS ── */
+.sitac-wrap{flex:1;display:flex;flex-direction:column;position:relative;min-height:80px}
+.sitac-toolbar{display:flex;gap:3px;padding:2px 4px;background:#f5f5f5;border-bottom:1px solid #ccc;align-items:center;flex-wrap:wrap}
+.sitac-toolbar button{border:1px solid #aaa;background:#fff;cursor:pointer;padding:2px 5px;font-size:9px;font-family:inherit;font-weight:700;border-radius:2px;line-height:1}
+.sitac-toolbar button:hover{background:#e0e0e0}
+.sitac-toolbar button.sact{background:#1a237e;color:#fff;border-color:#1a237e}
+.cdot{width:14px;height:14px;border:2px solid #888;border-radius:50%;cursor:pointer;display:inline-block;flex-shrink:0;vertical-align:middle}
+.cdot.sact{border:2.5px solid #000;box-shadow:0 0 0 1px #000}
+.sitac-canvas{display:block;width:100%;flex:1;cursor:crosshair;touch-action:none;background:#fff}
 
-    /* ── PRINT ── */
-    @media print {
-      .no-print { display: none !important; }
-      body { background: #fff; }
-      .sgo-sheet { page-break-after: always; }
-      @page { margin: 8mm; size: A4 landscape; }
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 680px) {
-      .sgo-sheet { grid-template-columns: 1fr; }
-      .sr { border-left: none; border-top: 2px solid #000; }
-      .mgrid { grid-template-columns: 1fr; }
-    }
-  </style>
+/* PRINT */
+@media print{
+  .no-print{display:none!important}
+  body{background:#fff}
+  .sgo-sheet{page-break-after:always;border:1pt solid #000}
+  @page{margin:6mm;size:A4 landscape}
+}
+@media(max-width:700px){
+  .sgo-sheet{grid-template-columns:1fr}
+  .sr{border-left:none;border-top:2px solid #000}
+  .home-grid{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
 
 <header class="no-print">
-  <strong style="letter-spacing:.5px;">SGO DIGITAL</strong>
-  <div class="hnav" id="navBtns" style="display:none;">
+  <strong>⚠ SGO Digital</strong>
+  <div class="hnav" id="navBtns" style="display:none">
     <button class="hbtn" onclick="goHome()">☰ Menu</button>
+    <button class="hbtn" onclick="window.print()">🖨 Imprimir</button>
     <button class="hbtn hbtn-red" onclick="exportJPG()">⬇ Exportar JPG</button>
+    <label class="hbtn" style="cursor:pointer">📷 Foto<input type="file" id="camInput" accept="image/*" multiple capture="environment" style="display:none"></label>
   </div>
 </header>
 
 <div class="wrap">
 
-  <!-- ═══════════ HOME ═══════════ -->
-  <div id="home" class="screen active">
-    <div class="mgrid">
-      <div class="mcard" style="border-bottom:6px solid #1b5e20" onclick="openSheet('fl')">🌲 Incêndios Florestais</div>
-      <div class="mcard" style="border-bottom:6px solid #5d4037" onclick="openSheet('es')">🏢 Incêndios Estruturais</div>
-      <div class="mcard" style="border-bottom:6px solid #e65100" onclick="openSheet('ac')">🚗 Acidentes Rodoviários</div>
-      <div class="mcard" style="border-bottom:6px solid #1a237e" onclick="openSheet('nb')">☣ NRBQ – Matérias Perigosas</div>
+<!-- HOME -->
+<div id="home" class="screen active">
+  <div style="text-align:center;padding:18px 0 12px;color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700">
+    Autoridade Nacional de Emergência e Proteção Civil — Sistema de Gestão de Operações
+  </div>
+  <div class="home-grid">
+    <div class="mcard" style="border-bottom:5px solid #1b5e20" onclick="openSheet('fl')"><span class="mcard-icon">🌲</span>Incêndios Florestais</div>
+    <div class="mcard" style="border-bottom:5px solid #4e342e" onclick="openSheet('es')"><span class="mcard-icon">🏢</span>Incêndios Estruturais</div>
+    <div class="mcard" style="border-bottom:5px solid #e65100" onclick="openSheet('ac')"><span class="mcard-icon">🚗</span>Acidentes Rodoviários</div>
+    <div class="mcard" style="border-bottom:5px solid #1a237e" onclick="openSheet('nb')"><span class="mcard-icon">☣</span>Matérias Perigosas / NRBQ</div>
+  </div>
+</div>
+
+<!-- EDITOR -->
+<div id="editor" class="screen">
+<div class="toolbar no-print">
+  <span class="tlbl">Ficha:</span>
+  <button class="hbtn" style="font-size:10px;padding:3px 8px" onclick="openSheet('fl')">🌲 Florestais</button>
+  <button class="hbtn" style="font-size:10px;padding:3px 8px" onclick="openSheet('es')">🏢 Estruturais</button>
+  <button class="hbtn" style="font-size:10px;padding:3px 8px" onclick="openSheet('ac')">🚗 Acidentes</button>
+  <button class="hbtn" style="font-size:10px;padding:3px 8px" onclick="openSheet('nb')">☣ NRBQ</button>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+  FICHA 1 – FLORESTAIS  (pág. 10)
+══════════════════════════════════════ -->
+<div id="form-fl" class="sgo-sheet">
+  <div><!-- LEFT -->
+    <div class="hdr-strip" style="background:#1b5e20;color:#fff">
+      <div class="hdr-main">Sistema de Gestão de Operações</div>
+      <div class="hdr-sub">Guia de Comando</div>
+      <div class="hdr-type">Incêndios Florestais</div>
+    </div>
+    <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
+    <table class="ft"><colgroup><col style="width:16px"><col></colgroup><tbody>
+
+    <tr><td colspan="2" style="padding:0">
+      <div class="grow g3 bar-yellow">
+        <div class="gr-b fc"><span class="lbl">Hr Posit</span><input type="time"></div>
+        <div class="gr-b fc"><span class="lbl">Ocorr. Nº</span><input type="text"></div>
+        <div class="fc"><span class="lbl">Canal Manobra</span><input type="text"></div>
+      </div>
+    </td></tr>
+
+    <!-- ESTOU: 3 rows -->
+    <tr>
+      <td rowspan="3" class="slbl sl-estou">ESTOU</td>
+      <td><span class="lbl">Estou em</span><input type="text"></td>
+    </tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 70px 1fr">
+      <div class="gr-b fc"><span class="lbl">Coord N (SIRESP)</span><input type="text" placeholder="__º__'__''N"></div>
+      <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Freguesia</div>
+      <div class="fc"><input type="text"></div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 70px 1fr">
+      <div class="gr-b fc"><span class="lbl">Coord W (SIRESP)</span><input type="text" placeholder="__º__'__''W"></div>
+      <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Município</div>
+      <div class="fc"><input type="text"></div>
+    </div></td></tr>
+
+    <!-- VEJO: 9 rows — rowspan=9 -->
+    <tr>
+      <td rowspan="9" class="slbl sl-vejo">VEJO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#ffcdd2">Incêndio:</div>
+        <div class="cbrow">
+          <span class="cbox cx-r" onclick="tog(this)">Activo (Curso)</span>
+          <span class="cbox cx-g" onclick="tog(this)">Rescaldo (Conclusão)</span>
+          <span class="cbox cx-b" onclick="tog(this)">Dominado (Resolução)</span>
+          <span class="cbox"     onclick="tog(this)">Extinto (Finalizado)</span>
+        </div>
+      </div></td>
+    </tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl">Com:</div>
+      <div class="cbrow">
+        <span class="cbox" onclick="tog(this)">Fraca Intensidade</span>
+        <span class="cbox cx-r" onclick="tog(this)">Muita Intensidade</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl">Em:</div>
+      <div class="cbrow">
+        <span class="cbox" onclick="tog(this)">Pinhal</span>
+        <span class="cbox" onclick="tog(this)">Mato</span>
+        <span class="cbox" onclick="tog(this)">Combustível Agrícola</span>
+        <span class="cbox" onclick="tog(this)">Eucaliptal</span>
+        <span class="cbox" onclick="tog(this)">Povoamento Misto</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl" style="background:#ffcdd2">Propagação</div>
+      <div class="cbrow">
+        <span class="cbox cx-r" onclick="tog(this)">Incêndio Superfície</span>
+        <span class="cbox cx-r" onclick="tog(this)">Incêndio Copas</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl">Em:</div>
+      <div class="cbrow">
+        <span class="cbox cx-b" onclick="tog(this)">Declive Suave</span>
+        <span class="cbox cx-b" onclick="tog(this)">Declive Acentuado</span>
+        <span class="cbox cx-b" onclick="tog(this)">Declive Moderado</span>
+        <span class="cbox cx-b" onclick="tog(this)">Terreno Plano</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl">A evoluir para:</div>
+      <div class="fc" style="display:flex;align-items:center;gap:4px">
+        <input type="text" style="flex:1">
+        <span style="font-size:9px;font-weight:700;white-space:nowrap;padding-right:4px">| Ponto Cardeal</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl" style="background:#bbdefb">Acessos:</div>
+      <div class="cbrow">
+        <span class="cbox cx-b" onclick="tog(this)">Bons</span>
+        <span class="cbox cx-b" onclick="tog(this)">Estrada Asfaltada</span>
+        <span class="cbox cx-b" onclick="tog(this)">Difíceis</span>
+        <span class="cbox cx-b" onclick="tog(this)">Estradões</span>
+        <span class="cbox cx-b" onclick="tog(this)">Sem Acessos</span>
+        <span class="cbox cx-b" onclick="tog(this)">Todo-o-terreno</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl" style="background:#c8e6c9">Pontos Sensíveis:</div>
+      <div class="cbrow">
+        <span class="cbox cx-g" onclick="tog(this)">Habitações</span>
+        <span class="cbox cx-g" onclick="tog(this)">Industria</span>
+        <span class="cbox cx-g" onclick="tog(this)">Comércio</span>
+        <span class="cbox cx-g" onclick="tog(this)">Outros</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:110px 1fr">
+      <div class="rlbl">Cond. Meteorológicas:</div>
+      <div class="fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding:3px">
+        <b style="font-size:9px">Vento:</b><input class="fi-il" type="text" style="width:42px"> a
+        <input class="fi-il" type="number" style="width:36px"><b style="font-size:9px">km/h</b>
+        <b style="font-size:9px">Ar:</b><input class="fi-il" type="number" style="width:34px"><b style="font-size:9px">ºC</b>
+        <input class="fi-il" type="number" style="width:34px"><b style="font-size:9px">%HR</b>
+      </div>
+    </div></td></tr>
+
+    <!-- FAÇO: 1 row — aligned with col 1 of table -->
+    <tr>
+      <td class="slbl sl-faco">FAÇO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#bbdefb">Faço:</div>
+        <div class="cbrow">
+          <span class="cbox cx-b" onclick="tog(this)">Ataque Cabeça</span>
+          <span class="cbox cx-b" onclick="tog(this)">Ataque Flanco(s) <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:48px"></span>
+          <span class="cbox cx-b" onclick="tog(this)">Rescaldo</span>
+          <span class="cbox cx-b" onclick="tog(this)">Defesa Ponto Sensível</span>
+        </div>
+      </div></td>
+    </tr>
+
+    <!-- PEÇO: 1 row -->
+    <tr>
+      <td class="slbl sl-peco">PEÇO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#c8e6c9;font-size:9px;line-height:1.3">Solicito:<br>(quant.)</div>
+        <div class="fc" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:3px">
+          <span style="font-size:9.5px;font-weight:700;display:flex;align-items:center;gap:2px"><input class="fi-il" type="number" style="width:28px"> Brigada(s)</span>
+          <span style="font-size:9.5px;font-weight:700;display:flex;align-items:center;gap:2px"><input class="fi-il" type="number" style="width:28px"> Meio Aéreo</span>
+          <span style="font-size:9.5px;font-weight:700;display:flex;align-items:center;gap:2px"><input class="fi-il" type="number" style="width:28px"> Grupo(s)</span>
+          <span style="font-size:9.5px;font-weight:700;display:flex;align-items:center;gap:2px">Outros:<input class="fi-il" type="text" style="width:60px"></span>
+        </div>
+      </div></td>
+    </tr>
+
+    </tbody></table>
+    <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" placeholder="; Categoria e Nome" style="flex:1"></div>
+    <div class="row-prossigo">Prossigo com o reconhecimento!</div>
+    <div id="fl-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
+  </div>
+  <div class="sr"><!-- RIGHT -->
+    <div class="rp-top">
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="fl-info"></div></div>
+      <div class="rp-stc">
+        <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('fl-sitac')">✕ Limpar</span></div>
+        <div class="sitac-wrap"><div class="sitac-toolbar" id="fl-stb"></div><canvas class="sitac-canvas" id="fl-sitac"></canvas></div>
+      </div>
+    </div>
+    <div class="rp-posit"><div class="rp-hdr">PONTOS DE SITUAÇÃO</div>
+      <div class="prow"><span class="plbl">2º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+      <div class="prow"><span class="plbl">3º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+      <div class="prow"><span class="plbl">4º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+    </div>
+    <div class="rp-meios"><div class="rp-hdr">MEIOS</div>
+      <table class="mt"><thead><tr><th>Meio</th><th>Entidade</th><th>Hr TO</th><th>Missão</th></tr></thead><tbody id="fl-meios"></tbody></table>
+    </div>
+    <div class="rp-pass">Passagem de COS às <input class="fi-il" type="time" style="width:62px">, para <input class="fi-il" type="text" style="flex:1;min-width:55px"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+  FICHA 2 – ESTRUTURAIS  (pág. 9)
+══════════════════════════════════════ -->
+<div id="form-es" class="sgo-sheet">
+  <div><!-- LEFT -->
+    <div class="hdr-strip" style="background:#4e342e;color:#fff">
+      <div class="hdr-main">Sistema de Gestão de Operações</div>
+      <div class="hdr-sub">Guia de Comando</div>
+      <div class="hdr-type">Incêndios Estruturais</div>
+    </div>
+    <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
+    <table class="ft"><colgroup><col style="width:16px"><col></colgroup><tbody>
+
+    <tr><td colspan="2" style="padding:0">
+      <div class="grow g3 bar-yellow">
+        <div class="gr-b fc"><span class="lbl">Hr Posit</span><input type="time"></div>
+        <div class="gr-b fc"><span class="lbl">Ocorr. Nº</span><input type="text"></div>
+        <div class="fc"><span class="lbl">Canal Manobra</span><input type="text"></div>
+      </div>
+    </td></tr>
+
+    <!-- ESTOU: 3 rows -->
+    <tr>
+      <td rowspan="3" class="slbl sl-estou">ESTOU</td>
+      <td><span class="lbl">Estou em</span><input type="text"></td>
+    </tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 70px 1fr">
+      <div class="gr-b fc"><span class="lbl">Coord N (SIRESP)</span><input type="text" placeholder="__º__'__''N"></div>
+      <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Freguesia</div>
+      <div class="fc"><input type="text"></div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 70px 1fr">
+      <div class="gr-b fc"><span class="lbl">Coord W (SIRESP)</span><input type="text" placeholder="__º__'__''W"></div>
+      <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Município</div>
+      <div class="fc"><input type="text"></div>
+    </div></td></tr>
+
+    <!-- VEJO: 7 rows — rowspan=7 -->
+    <tr>
+      <td rowspan="7" class="slbl sl-vejo">VEJO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#ffcdd2">Incêndio:</div>
+        <div class="cbrow">
+          <span class="cbox cx-r" onclick="tog(this)">Activo (Curso)</span>
+          <span class="cbox cx-g" onclick="tog(this)">Rescaldo (Conclusão)</span>
+          <span class="cbox cx-b" onclick="tog(this)">Dominado (Resolução)</span>
+          <span class="cbox"     onclick="tog(this)">Extinto (Finalizado)</span>
+        </div>
+      </div></td>
+    </tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl">Com:</div>
+      <div class="cbrow">
+        <span class="cbox" onclick="tog(this)">Fogo à vista</span>
+        <span class="cbox cx-r" onclick="tog(this)">Sem fogo à vista</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl">Em:</div>
+      <div class="cbrow">
+        <span class="cbox" onclick="tog(this)">Habitação</span>
+        <span class="cbox" onclick="tog(this)">Comércio</span>
+        <span class="cbox" onclick="tog(this)">Industria</span>
+        <span class="cbox" onclick="tog(this)">Outro <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:52px"></span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl">Tipo edifício:</div>
+      <div class="cbrow">
+        <span class="cbox" onclick="tog(this)">Unifamiliar</span>
+        <span class="cbox" onclick="tog(this)">Hosp. / Lar / Escola</span>
+        <span class="cbox" onclick="tog(this)">Ed. Grande Altura</span>
+        <span class="cbox" onclick="tog(this)">Militar / Segurança</span>
+        <span class="cbox" onclick="tog(this)">Utilidade Pública</span>
+        <span class="cbox" onclick="tog(this)">Outro <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:45px"></span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl" style="background:#ffcdd2">Propagação</div>
+      <div class="cbrow">
+        <span class="cbox cx-r" onclick="tog(this)">Horizontal</span>
+        <span class="cbox cx-r" onclick="tog(this)">Vertical</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl" style="background:#b2ebf2">Hidrantes</div>
+      <div class="cbrow">
+        <span class="cbox cx-t" onclick="tog(this)">Marco de água</span>
+        <span class="cbox cx-t" onclick="tog(this)">Outro <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:48px"></span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl" style="background:#c8e6c9">Pontos Sensíveis:</div>
+      <div class="cbrow">
+        <span class="cbox cx-g" onclick="tog(this)">Habitações</span>
+        <span class="cbox cx-g" onclick="tog(this)">Industria</span>
+        <span class="cbox cx-g" onclick="tog(this)">Comércio</span>
+        <span class="cbox cx-g" onclick="tog(this)">Outro <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:48px"></span>
+      </div>
+    </div></td></tr>
+
+    <!-- FAÇO: 1 row -->
+    <tr>
+      <td class="slbl sl-faco">FAÇO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#bbdefb">Faço</div>
+        <div class="cbrow">
+          <span class="cbox cx-b" onclick="tog(this)">Reconhecimento</span>
+          <span class="cbox cx-b" onclick="tog(this)">Salvamentos</span>
+          <span class="cbox cx-b" onclick="tog(this)">Estb. Meios de Ação</span>
+          <span class="cbox cx-b" onclick="tog(this)">Proteção às exposições</span>
+          <span class="cbox cx-b" onclick="tog(this)">Estratégia Ofensiva</span>
+          <span class="cbox cx-b" onclick="tog(this)">Estratégia Defensiva</span>
+          <span class="cbox cx-b" onclick="tog(this)">Rescaldo</span>
+          <span class="cbox cx-b" onclick="tog(this)">Vigilância</span>
+        </div>
+      </div></td>
+    </tr>
+
+    <!-- PEÇO: 1 row -->
+    <tr>
+      <td class="slbl sl-peco">PEÇO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#c8e6c9;font-size:9px;line-height:1.3">Solicito:<br>(quant.)</div>
+        <div class="cbrow">
+          <span class="cbox cx-g" onclick="tog(this)">VUCI / VECI</span>
+          <span class="cbox cx-g" onclick="tog(this)">VMER</span>
+          <span class="cbox cx-g" onclick="tog(this)">VTT</span>
+          <span class="cbox cx-g" onclick="tog(this)">SMPC</span>
+          <span class="cbox cx-g" onclick="tog(this)">VE / VP</span>
+          <span class="cbox cx-g" onclick="tog(this)">Elemento de Comando</span>
+          <span class="cbox cx-g" onclick="tog(this)">ABSC / ABTD / ABTM</span>
+          <span class="cbox cx-g" onclick="tog(this)">Outro <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:45px"></span>
+        </div>
+      </div></td>
+    </tr>
+
+    </tbody></table>
+    <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" placeholder="; Categoria e Nome" style="flex:1"></div>
+    <div class="row-prossigo">Prossigo com o reconhecimento!</div>
+    <div id="es-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
+  </div>
+  <div class="sr"><!-- RIGHT -->
+    <div class="rp-top">
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="es-info"></div></div>
+      <div class="rp-stc">
+        <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('es-sitac')">✕ Limpar</span></div>
+        <div class="sitac-wrap"><div class="sitac-toolbar" id="es-stb"></div><canvas class="sitac-canvas" id="es-sitac"></canvas></div>
+      </div>
+    </div>
+    <div class="rp-posit"><div class="rp-hdr">Pontos de Situação</div>
+      <div class="prow"><span class="plbl">2º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+      <div class="prow"><span class="plbl">3º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+      <div class="prow"><span class="plbl">4º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+    </div>
+    <div class="rp-meios"><div class="rp-hdr">MEIOS</div>
+      <table class="mt"><thead><tr><th>Meio</th><th>Entidade</th><th>Hr TO</th><th>Missão</th></tr></thead><tbody id="es-meios"></tbody></table>
+    </div>
+    <div class="rp-pass">Passagem de COS às <input class="fi-il" type="time" style="width:62px">, para <input class="fi-il" type="text" style="flex:1;min-width:55px"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+  FICHA 3 – ACIDENTES  (pág. 8)
+══════════════════════════════════════ -->
+<div id="form-ac" class="sgo-sheet">
+  <div><!-- LEFT -->
+    <div class="hdr-strip" style="background:#fdd835;color:#000;border-bottom:3px solid #e65100">
+      <div class="hdr-main">Sistema de Gestão de Operações</div>
+      <div class="hdr-sub">Guia de Comando</div>
+      <div class="hdr-type">Acidentes</div>
+    </div>
+    <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
+    <table class="ft"><colgroup><col style="width:16px"><col></colgroup><tbody>
+
+    <tr><td colspan="2" style="padding:0">
+      <div class="grow g3 bar-yellow">
+        <div class="gr-b fc"><span class="lbl">Hr Posit</span><input type="time"></div>
+        <div class="gr-b fc"><span class="lbl">Ocorr. Nº</span><input type="text"></div>
+        <div class="fc"><span class="lbl">Canal Manobra</span><input type="text"></div>
+      </div>
+    </td></tr>
+
+    <!-- ESTOU: 4 rows -->
+    <tr>
+      <td rowspan="4" class="slbl sl-estou">ESTOU</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:38px 1fr">
+        <div class="rlbl" style="background:#fdd835">Estou em</div>
+        <div class="fc"><span class="lbl">Via</span><input type="text"></div>
+      </div></td>
+    </tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 80px 1fr">
+      <div class="gr-b fc"><span class="lbl">Km / Nº</span><input type="text"></div>
+      <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Sentido</div>
+      <div class="fc"><input type="text"></div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 80px 1fr">
+      <div class="gr-b fc"><span class="lbl">Coord N (SIRESP)</span><input type="text" placeholder="__º__'__''N"></div>
+      <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Freguesia</div>
+      <div class="fc"><input type="text"></div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 80px 1fr">
+      <div class="gr-b fc"><span class="lbl">Coord W (SIRESP)</span><input type="text" placeholder="__º__'__''W"></div>
+      <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Município</div>
+      <div class="fc"><input type="text"></div>
+    </div></td></tr>
+
+    <!-- VEJO: 6 rows — rowspan=6 -->
+    <tr>
+      <td rowspan="6" class="slbl sl-vejo">VEJO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#ffcdd2">Acidente</div>
+        <div class="cbrow">
+          <span style="font-size:9.5px;font-weight:700;padding:2px 3px">Despiste de:</span><input class="fi-il" type="text" style="width:80px">
+          <span style="font-size:9.5px;font-weight:700;padding:2px 3px">Colisão entre:</span><input class="fi-il" type="text" style="width:80px">
+          <span class="cbox" onclick="tog(this)">Outra</span><input class="fi-il" type="text" style="width:65px">
+        </div>
+      </div></td>
+    </tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl">Vítimas</div>
+      <div class="fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:3px">
+        <span style="font-size:9.5px;font-weight:700">Leves <input class="fi-il" type="number" style="width:30px"></span>
+        <span style="font-size:9.5px;font-weight:700">Graves <input class="fi-il" type="number" style="width:30px"></span>
+        <span style="font-size:9.5px;font-weight:700">Mortos <input class="fi-il" type="number" style="width:30px"></span>
+        <span style="font-size:9.5px;font-weight:700">Desaparec. <input class="fi-il" type="number" style="width:30px"></span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+      <div class="rlbl" style="background:#ffcdd2">Encarcerados:</div>
+      <div class="cbrow">
+        <span class="cbox cx-r"  onclick="tog(this)">Mecânico</span>
+        <span class="cbox cx-pk" onclick="tog(this)">Veículo 1</span>
+        <span class="cbox cx-b"  onclick="tog(this)">Físico Tipo I</span>
+        <span class="cbox cx-pk" onclick="tog(this)">Veículo 2</span>
+        <span class="cbox cx-b"  onclick="tog(this)">Físico Tipo II</span>
+        <span class="cbox cx-pk" onclick="tog(this)">Veículo 3</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:38px 1fr">
+      <div class="rlbl" style="background:#ffe0b2">Via:</div>
+      <div class="fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:3px">
+        <span class="cbox cx-br" onclick="tog(this)">Cortada</span>
+        <span class="cbox cx-br" onclick="tog(this)">Condicionada</span>
+        <span style="font-size:9.5px;font-weight:700">Sentido:<input class="fi-il" type="text" style="width:27px">/<input class="fi-il" type="text" style="width:27px"></span>
+        <span style="font-size:9.5px;font-weight:700">Sentido:<input class="fi-il" type="text" style="width:27px">/<input class="fi-il" type="text" style="width:27px"></span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:80px 1fr">
+      <div class="rlbl" style="background:#c8e6c9;text-align:center;font-size:9px;line-height:1.3">Carga do<br>Veículo:</div>
+      <div class="fc" style="padding:3px">
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px"><b style="font-size:9px;white-space:nowrap">Tipo:</b><input class="fi-il" type="text" style="flex:1"></div>
+        <div style="display:flex;align-items:center;gap:4px"><b style="font-size:9px;white-space:nowrap">Afetação:</b><input class="fi-il" type="text" style="flex:1"></div>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:110px 1fr">
+      <div class="rlbl">Cond. Meteorológicas:</div>
+      <div class="fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding:3px">
+        <b style="font-size:9px">Vento:</b><input class="fi-il" type="text" style="width:40px"> a
+        <input class="fi-il" type="number" style="width:34px"><b style="font-size:9px">km/h</b>
+        <b style="font-size:9px">Ar:</b><input class="fi-il" type="number" style="width:34px"><b style="font-size:9px">ºC</b>
+        <input class="fi-il" type="number" style="width:34px"><b style="font-size:9px">%HR</b>
+      </div>
+    </div></td></tr>
+
+    <!-- FAÇO: 1 row -->
+    <tr>
+      <td class="slbl sl-faco">FAÇO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#bbdefb">Faço:</div>
+        <div class="cbrow">
+          <span class="cbox cx-b" onclick="tog(this)">Zonas Trabalho</span>
+          <span class="cbox cx-b" onclick="tog(this)">Abordagem às vítimas</span>
+          <span class="cbox cx-b" onclick="tog(this)">Estabilização</span>
+          <span class="cbox cx-b" onclick="tog(this)">Criação de Espaço</span>
+        </div>
+      </div></td>
+    </tr>
+
+    <!-- SOLICITO: 1 row -->
+    <tr>
+      <td class="slbl sl-solicito">SOLICITO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#c8e6c9;font-size:9px;line-height:1.3">Solicito:<br>(quant.)</div>
+        <div class="cbrow">
+          <span class="cbox cx-g" onclick="tog(this)">VMER</span>
+          <span class="cbox cx-g" onclick="tog(this)">VSAT / VSAE</span>
+          <span class="cbox cx-g" onclick="tog(this)">ABSC</span>
+          <span class="cbox cx-g" onclick="tog(this)">Outros <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:62px"></span>
+        </div>
+      </div></td>
+    </tr>
+
+    </tbody></table>
+    <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" placeholder="; Categoria e Nome" style="flex:1"></div>
+    <div class="row-prossigo">Prossigo com o reconhecimento!</div>
+    <div id="ac-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
+  </div>
+  <div class="sr"><!-- RIGHT -->
+    <div class="rp-top">
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="ac-info"></div></div>
+      <div class="rp-stc">
+        <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('ac-sitac')">✕ Limpar</span></div>
+        <div class="sitac-wrap"><div class="sitac-toolbar" id="ac-stb"></div><canvas class="sitac-canvas" id="ac-sitac"></canvas></div>
+      </div>
+    </div>
+    <div class="rp-posit"><div class="rp-hdr">Pontos de Situação</div>
+      <div class="prow"><span class="plbl">2º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+      <div class="prow"><span class="plbl">3º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+      <div class="prow"><span class="plbl">4º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+    </div>
+    <div class="rp-meios"><div class="rp-hdr">MEIOS</div>
+      <table class="mt"><thead><tr><th>Meio</th><th>Entidade</th><th>Hr TO</th><th>Missão</th></tr></thead><tbody id="ac-meios"></tbody></table>
+    </div>
+    <div class="rp-pass">Passagem de COS às <input class="fi-il" type="time" style="width:62px">, para <input class="fi-il" type="text" style="flex:1;min-width:55px"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+  FICHA 4 – NRBQ  (pág. 7)
+══════════════════════════════════════ -->
+<div id="form-nb" class="sgo-sheet">
+  <div><!-- LEFT -->
+    <div class="hdr-strip" style="background:#1a237e;color:#fff">
+      <div class="hdr-main">Sistema de Gestão de Operações</div>
+      <div class="hdr-sub">Guia de Comando</div>
+      <div class="hdr-type">Acidentes com Matérias Perigosas</div>
+    </div>
+    <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento NRBQ</div>
+    <table class="ft"><colgroup><col style="width:16px"><col></colgroup><tbody>
+
+    <tr><td colspan="2" style="padding:0">
+      <div class="grow g3 bar-yellow">
+        <div class="gr-b fc"><span class="lbl">Hr Posit</span><input type="time"></div>
+        <div class="gr-b fc"><span class="lbl">Ocorr. Nº</span><input type="text"></div>
+        <div class="fc"><span class="lbl">Canal Manobra</span><input type="text"></div>
+      </div>
+    </td></tr>
+
+    <!-- ESTOU: 4 rows — rowspan=4 -->
+    <tr>
+      <td rowspan="4" class="slbl sl-estou">ESTOU</td>
+      <td style="padding:0"><div class="grow g2">
+        <div class="gr-b fc"><span class="lbl">Local</span><input type="text"></div>
+        <div class="fc"><span class="lbl">Freguesia</span><input type="text"></div>
+      </div></td>
+    </tr>
+    <tr><td style="padding:0"><div class="grow g2">
+      <div class="gr-b fc"><span class="lbl">Coord WGS84 (N)</span><input type="text" placeholder="__º__'__''N"></div>
+      <div class="fc"><span class="lbl">Concelho</span><input type="text"></div>
+    </div></td></tr>
+    <tr><td><span class="lbl">Coord WGS84 (W)</span><input type="text" placeholder="__º__'__''W"></td></tr>
+    <tr><td style="padding:0">
+      <div class="grow g2 gr-bb">
+        <div class="gr-b fc"><span class="lbl">Via Pública / Linha Férrea (Km/Sentido)</span><input type="text"></div>
+        <div class="fc"><span class="lbl">Edifício (Tipo)</span><input type="text"></div>
+      </div>
+      <div class="grow g2">
+        <div class="gr-b fc"><span class="lbl">Tipo Terreno</span><input type="text"></div>
+        <div class="fc"><span class="lbl">Tipo Vegetação</span><input type="text"></div>
+      </div>
+    </td></tr>
+
+    <!-- VEJO: 7 rows — rowspan=7 -->
+    <tr>
+      <td rowspan="7" class="slbl sl-vejo">VEJO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:100px 1fr">
+        <div class="rlbl" style="background:#ffcdd2;font-size:9px;text-align:center;line-height:1.3">Mercadorias e<br>Substâncias<br>Perigosas</div>
+        <div>
+          <div class="grow g2 gr-bb">
+            <div class="gr-b fc"><span class="lbl">Nº Perigo</span><input type="text"></div>
+            <div class="fc"><span class="lbl">Quantidade Estimada</span><input type="text"></div>
+          </div>
+          <div class="gr-bb fc"><span class="lbl">Nº ONU</span><input type="text"></div>
+          <div class="fc"><span class="lbl">Descrição Visual</span><input type="text"></div>
+        </div>
+      </div></td>
+    </tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:100px 1fr">
+      <div class="rlbl" style="background:#fff9c4;font-size:9px;text-align:center;line-height:1.3">Natureza do<br>Incidente</div>
+      <div class="cbrow">
+        <span class="cbox cx-y" onclick="tog(this)">Fuga (vapor/gás)</span>
+        <span class="cbox cx-y" onclick="tog(this)">Derrame (sólido/líquido)</span>
+        <span class="cbox cx-o" onclick="tog(this)">Incêndio</span>
+        <span class="cbox cx-o" onclick="tog(this)">Explosão</span>
+        <span style="font-size:9px;font-weight:700;padding:2px">Outro:<input class="fi-il" type="text" style="width:68px"></span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:100px 1fr">
+      <div class="rlbl" style="background:#ffe0b2;font-size:9px;text-align:center;line-height:1.3">Matéria não<br>Identificada –<br>Suspeita NRBQ</div>
+      <div class="fc" style="padding:3px">
+        <div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap;margin-bottom:2px">
+          <b style="font-size:9px">Cheiro:</b>
+          <span class="cbox" onclick="tog(this)">Sim</span>
+          <span class="cbox" onclick="tog(this)">Não</span>
+          <b style="font-size:9px">Tipo:</b><input class="fi-il" type="text" style="flex:1;min-width:50px">
+        </div>
+        <div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap;margin-bottom:2px">
+          <b style="font-size:9px">Cor:</b><input class="fi-il" type="text" style="width:52px">
+          <b style="font-size:9px">Origem:</b><input class="fi-il" type="text" style="flex:1">
+        </div>
+        <div style="display:flex;align-items:center;gap:3px">
+          <b style="font-size:9px">Outro:</b><input class="fi-il" type="text" style="flex:1">
+        </div>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:55px 1fr">
+      <div class="rlbl" style="background:#ffcdd2">Vítimas:</div>
+      <div class="fc" style="padding:3px">
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:2px">
+          <b style="font-size:9px">Nº</b><input class="fi-il" type="number" style="width:28px">
+          <span class="cbox cx-r" onclick="tog(this)">Leves</span><input class="fi-il" type="number" style="width:28px">
+          <span class="cbox cx-r" onclick="tog(this)">Graves</span><input class="fi-il" type="number" style="width:28px">
+          <span class="cbox cx-r" onclick="tog(this)">S/Vítimas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <b style="font-size:9px">Sintomas:</b><input class="fi-il" type="text" style="flex:1">
+          <b style="font-size:9px">Mortos:</b><input class="fi-il" type="number" style="width:28px">
+        </div>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:110px 1fr">
+      <div class="rlbl">Cond. Meteorológicas:</div>
+      <div class="fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding:3px">
+        <b style="font-size:9px">Dir. Vento:</b><input class="fi-il" type="text" style="width:40px">
+        <b style="font-size:9px">Céu:</b><input class="fi-il" type="text" style="width:48px">
+        <b style="font-size:9px">Int.:</b>
+        <span class="cbox" onclick="tog(this)">f</span>
+        <span class="cbox" onclick="tog(this)">M</span>
+        <span class="cbox" onclick="tog(this)">F</span>
+        <b style="font-size:9px">T:</b><input class="fi-il" type="number" style="width:30px"><b style="font-size:9px">ºC</b>
+        <b style="font-size:9px">V:</b><input class="fi-il" type="number" style="width:30px"><b style="font-size:9px">km/h</b>
+        <b style="font-size:9px">Precip.:</b>
+        <span class="cbox" onclick="tog(this)">Sim</span>
+        <span class="cbox" onclick="tog(this)">Não</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0"><div class="grow g2">
+      <div class="gr-b fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:2px;padding:3px">
+        <b style="font-size:9px">Autoridade:</b>
+        <span class="cbox" onclick="tog(this)">S</span><span class="cbox" onclick="tog(this)">N</span>
+        <span class="cbox" onclick="tog(this)">GNR</span><span class="cbox" onclick="tog(this)">PSP</span>
+      </div>
+      <div class="fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:2px;padding:3px">
+        <b style="font-size:9px">Faixas:</b>
+        <span class="cbox" onclick="tog(this)">Desob.</span>
+        <span class="cbox" onclick="tog(this)">Obst.</span>
+        <span class="cbox" onclick="tog(this)">1</span><span class="cbox" onclick="tog(this)">2</span>
+        <span class="cbox" onclick="tog(this)">3</span><span class="cbox" onclick="tog(this)">4</span>
+      </div>
+    </div></td></tr>
+    <tr><td style="padding:0">
+      <div class="fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding:3px">
+        <b style="font-size:9px">Outros Meios:</b>
+        <span class="cbox" onclick="tog(this)">INEM (VMER/SIV)</span>
+        <span class="cbox" onclick="tog(this)">RSB</span>
+        <span class="cbox" onclick="tog(this)">GIPS</span>
+        <b style="font-size:9px">Outros:</b><input class="fi-il" type="text" style="flex:1;min-width:50px">
+      </div>
+    </td></tr>
+
+    <!-- FAÇO: 1 row -->
+    <tr>
+      <td class="slbl sl-faco">FAÇO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#bbdefb">Faço:</div>
+        <div class="cbrow">
+          <span class="cbox cx-b" onclick="tog(this)">Proteção Exposições</span>
+          <span class="cbox cx-b" onclick="tog(this)">Desobstrução / Limpeza Via</span>
+          <span class="cbox cx-b" onclick="tog(this)">Delimitação Zonas (quente, morna e fria) / Corredores</span>
+        </div>
+      </div></td>
+    </tr>
+
+    <!-- SOLICITO: 1 row -->
+    <tr>
+      <td class="slbl sl-solicito">SOLICITO</td>
+      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
+        <div class="rlbl" style="background:#c8e6c9;font-size:9px;line-height:1.3">Solicito:<br>(quant.)</div>
+        <div class="cbrow">
+          <span class="cbox cx-g" onclick="tog(this)">VUCI/VPMA/VTTU/VSAT/ABSC</span>
+          <span class="cbox cx-g" onclick="tog(this)">Autoridade (GNR/PSP)</span>
+          <span class="cbox cx-g" onclick="tog(this)">Elemento de Comando (PCO)</span>
+          <span class="cbox cx-g" onclick="tog(this)">Outros</span>
+        </div>
+      </div></td>
+    </tr>
+
+    </tbody></table>
+    <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" placeholder="; Categoria e Nome" style="flex:1"></div>
+    <div class="row-prossigo">Prossigo com o reconhecimento!</div>
+    <div id="nb-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
+  </div>
+  <div class="sr"><!-- RIGHT -->
+    <div class="rp-top">
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="nb-info"></div></div>
+      <div class="rp-stc">
+        <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('nb-sitac')">✕ Limpar</span></div>
+        <div class="sitac-wrap"><div class="sitac-toolbar" id="nb-stb"></div><canvas class="sitac-canvas" id="nb-sitac"></canvas></div>
+      </div>
+    </div>
+    <div class="rp-posit"><div class="rp-hdr">Ponto de Situação</div>
+      <div class="prow"><span class="plbl">2º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+      <div class="prow"><span class="plbl">3º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+      <div class="prow"><span class="plbl">4º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" style="width:100%"></div></div>
+    </div>
+    <div class="rp-meios"><div class="rp-hdr">Meios</div>
+      <table class="mt"><thead><tr><th>Meio</th><th>Entidade</th><th>Hr TO</th><th>Missão</th></tr></thead><tbody id="nb-meios"></tbody></table>
     </div>
   </div>
+</div>
 
-  <!-- ═══════════ EDITOR ═══════════ -->
-  <div id="editor" class="screen">
-    <div class="upload-zone no-print">
-      <input type="file" id="camInput" accept="image/*" multiple capture="environment" style="display:none">
-      <button class="hbtn" style="background:#333;" onclick="document.getElementById('camInput').click()">📷 Tirar Foto / Anexar</button>
-    </div>
-
-    <!-- ════════════════════════════════════════════════════
-         FICHA 1 – INCÊNDIOS FLORESTAIS
-    ════════════════════════════════════════════════════ -->
-    <div id="form-fl" class="sgo-sheet">
-
-      <!-- ── LEFT ── -->
-      <div class="sl">
-        <div class="sht" style="background:#1b5e20;color:#fff;">
-          <div class="sht-main">Sistema de Gestão de Operações</div>
-          <div class="sht-sub">Guia de Comando</div>
-          <div class="sht-type">Incêndios Florestais</div>
-        </div>
-        <div class="bar bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
-
-        <table class="ft">
-          <colgroup><col style="width:18px"><col></colgroup>
-          <tbody>
-            <!-- Hr Posit row -->
-            <tr><td colspan="2" style="padding:0;">
-              <div class="srow srow3 bar-yrow">
-                <div class="srow-b cc"><span class="lbl">Hr Posit</span><input class="fi" type="time"></div>
-                <div class="srow-b cc"><span class="lbl">Ocorr. Nº</span><input class="fi" type="text"></div>
-                <div class="cc"><span class="lbl">Canal Manobra</span><input class="fi" type="text"></div>
-              </div>
-            </td></tr>
-
-            <!-- ESTOU -->
-            <tr>
-              <td rowspan="3" class="slbl sl-estou">ESTOU</td>
-              <td><span class="lbl">Estou em</span><input class="fi" type="text"></td>
-            </tr>
-            <tr><td style="padding:0;">
-              <div class="srow" style="grid-template-columns:1fr 80px 1fr;">
-                <div class="srow-b cc"><span class="lbl">Coord (N)</span><input class="fi" type="text" placeholder="__º __' __''"></div>
-                <div class="srow-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;">Freguesia</div>
-                <div class="cc"><input class="fi" type="text"></div>
-              </div>
-            </td></tr>
-            <tr><td style="padding:0;">
-              <div class="srow" style="grid-template-columns:1fr 80px 1fr;">
-                <div class="srow-b cc"><span class="lbl">SIRESP (W)</span><input class="fi" type="text" placeholder="__º __' __''"></div>
-                <div class="srow-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;">Município</div>
-                <div class="cc"><input class="fi" type="text"></div>
-              </div>
-            </td></tr>
-
-            <!-- VEJO -->
-            <tr>
-              <td rowspan="9" class="slbl sl-vejo">VEJO</td>
-              <td style="padding:0;"><div class="srow" style="grid-template-columns:65px 1fr;">
-                <div class="rlbl" style="background:#ffcdd2;">Incêndio:</div>
-                <div class="cb">
-                  <span class="copt co-r" onclick="tog(this)">Activo (Curso)</span>
-                  <span class="copt co-g" onclick="tog(this)">Rescaldo (Conclusão)</span>
-                  <span class="copt co-b" onclick="tog(this)">Dominado (Resolução)</span>
-                  <span class="copt"     onclick="tog(this)">Extinto (Finalizado)</span>
-                </div>
-              </div></td>
-            </tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:65px 1fr;">
-              <div class="rlbl">Com:</div>
-              <div class="cb">
-                <span class="copt"    onclick="tog(this)">Fraca Intensidade</span>
-                <span class="copt co-r" onclick="tog(this)">Muita Intensidade</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:65px 1fr;">
-              <div class="rlbl">Em:</div>
-              <div class="cb">
-                <span class="copt" onclick="tog(this)">Pinhal</span>
-                <span class="copt" onclick="tog(this)">Mato</span>
-                <span class="copt" onclick="tog(this)">Combustível Agrícola</span>
-                <span class="copt" onclick="tog(this)">Eucaliptal</span>
-                <span class="copt" onclick="tog(this)">Povoamento Misto</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:65px 1fr;">
-              <div class="rlbl" style="background:#ffcdd2;">Propagação</div>
-              <div class="cb">
-                <span class="copt co-r" onclick="tog(this)">Incêndio Superfície</span>
-                <span class="copt co-r" onclick="tog(this)">Incêndio Copas</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:65px 1fr;">
-              <div class="rlbl">Em:</div>
-              <div class="cb">
-                <span class="copt co-b" onclick="tog(this)">Declive Suave</span>
-                <span class="copt co-b" onclick="tog(this)">Declive Acentuado</span>
-                <span class="copt co-b" onclick="tog(this)">Declive Moderado</span>
-                <span class="copt co-b" onclick="tog(this)">Terreno Plano</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow srow2">
-              <div class="srow-b cc"><span class="lbl">A evoluir para</span><input class="fi" type="text"></div>
-              <div class="cc"><span class="lbl">Ponto Cardeal</span><input class="fi" type="text"></div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:65px 1fr;">
-              <div class="rlbl" style="background:#bbdefb;">Acessos:</div>
-              <div class="cb">
-                <span class="copt co-b" onclick="tog(this)">Bons</span>
-                <span class="copt co-b" onclick="tog(this)">Estrada Asfaltada</span>
-                <span class="copt co-b" onclick="tog(this)">Difíceis</span>
-                <span class="copt co-b" onclick="tog(this)">Estradões</span>
-                <span class="copt co-b" onclick="tog(this)">Sem Acessos</span>
-                <span class="copt co-b" onclick="tog(this)">Todo-o-terreno</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:90px 1fr;">
-              <div class="rlbl" style="background:#c8e6c9;">Pontos Sensíveis:</div>
-              <div class="cb">
-                <span class="copt co-g" onclick="tog(this)">Habitações</span>
-                <span class="copt co-g" onclick="tog(this)">Industria</span>
-                <span class="copt co-g" onclick="tog(this)">Comércio</span>
-                <span class="copt co-g" onclick="tog(this)">Outros</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:120px 1fr;">
-              <div class="rlbl">Condições Meteorológicas:</div>
-              <div class="cc" style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;">
-                <b style="font-size:10px;">Vento:</b> <input class="fi-il" type="text" style="width:50px;"> <span style="font-size:10px;">a</span>
-                <input class="fi-il" type="number" style="width:40px;"> <b style="font-size:10px;">km/h</b>
-                <b style="font-size:10px;">Ar:</b> <input class="fi-il" type="number" style="width:38px;"> <b style="font-size:10px;">ºC</b>
-                <input class="fi-il" type="number" style="width:38px;"> <b style="font-size:10px;">%HR</b>
-              </div>
-            </div></td></tr>
-
-            <!-- FAÇO -->
-            <tr>
-              <td class="slbl sl-faco">FAÇO</td>
-              <td style="padding:0;"><div class="srow" style="grid-template-columns:55px 1fr;">
-                <div class="rlbl" style="background:#bbdefb;">Faço:</div>
-                <div class="cb">
-                  <span class="copt co-b" onclick="tog(this)">Ataque Cabeça</span>
-                  <span class="copt co-b" onclick="tog(this)">Ataque Flanco(s)</span>
-                  <span class="copt co-b" onclick="tog(this)">Rescaldo</span>
-                  <span class="copt co-b" onclick="tog(this)">Defesa Ponto Sensível</span>
-                </div>
-              </div></td>
-            </tr>
-
-            <!-- PEÇO -->
-            <tr>
-              <td class="slbl sl-peco">PEÇO</td>
-              <td style="padding:0;"><div class="srow" style="grid-template-columns:90px 1fr;">
-                <div class="rlbl" style="background:#c8e6c9;white-space:normal;text-align:center;">Solicito (quantif.):</div>
-                <div class="cc" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
-                  <span style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700;"><input class="fi-il" type="number" style="width:32px;"> Brigada(s) Combate</span>
-                  <span style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700;"><input class="fi-il" type="number" style="width:32px;"> Meio Aéreo</span>
-                  <span style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700;"><input class="fi-il" type="number" style="width:32px;"> Grupo(s) Combate</span>
-                  <span style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700;">Outros: <input class="fi-il" type="text" style="width:70px;"></span>
-                </div>
-              </div></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="row-assumo">
-          <span style="white-space:nowrap;font-size:11px;">Assumo COS</span>
-          <input class="fi" type="text" placeholder="; Categoria e Nome" style="flex:1;">
-        </div>
-        <div class="row-prossigo">Prossigo com o reconhecimento!</div>
-        <div class="photo-area" id="fl-photos" style="display:none;"></div>
-      </div>
-
-      <!-- ── RIGHT ── -->
-      <div class="sr">
-        <div class="rp-top">
-          <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="fl-info"></div></div>
-          <div class="rp-stc"><div class="rp-hdr">SITAC</div><textarea class="rp-ta"></textarea></div>
-        </div>
-        <div class="rp-posit"><div class="rp-hdr">PONTOS DE SITUAÇÃO</div>
-          <div class="prow"><span class="plbl">2º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-          <div class="prow"><span class="plbl">3º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-          <div class="prow"><span class="plbl">4º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-        </div>
-        <div class="rp-meios"><div class="rp-hdr">MEIOS</div>
-          <table class="mt"><thead><tr><th>Meio</th><th>Entidade</th><th>Hr no TO</th><th>Missão</th></tr></thead><tbody id="fl-meios"></tbody></table>
-        </div>
-        <div class="rp-pass">Passagem de COS às <input class="fi-il" type="time" style="width:70px;"> , para <input class="fi-il" type="text" style="flex:1;width:80px;"></div>
-      </div>
-    </div><!-- /form-fl -->
-
-
-    <!-- ════════════════════════════════════════════════════
-         FICHA 2 – INCÊNDIOS ESTRUTURAIS
-    ════════════════════════════════════════════════════ -->
-    <div id="form-es" class="sgo-sheet">
-
-      <!-- ── LEFT ── -->
-      <div class="sl">
-        <div class="sht" style="background:#5d4037;color:#fff;">
-          <div class="sht-main">Sistema de Gestão de Operações</div>
-          <div class="sht-sub">Guia de Comando</div>
-          <div class="sht-type">Incêndios Estruturais</div>
-        </div>
-        <div class="bar bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
-
-        <table class="ft">
-          <colgroup><col style="width:18px"><col></colgroup>
-          <tbody>
-            <!-- Hr Posit row -->
-            <tr><td colspan="2" style="padding:0;">
-              <div class="srow srow3 bar-yrow">
-                <div class="srow-b cc"><span class="lbl">Hr Posit</span><input class="fi" type="time"></div>
-                <div class="srow-b cc"><span class="lbl">Ocorr. Nº</span><input class="fi" type="text"></div>
-                <div class="cc"><span class="lbl">Canal Manobra</span><input class="fi" type="text"></div>
-              </div>
-            </td></tr>
-
-            <!-- ESTOU -->
-            <tr>
-              <td rowspan="3" class="slbl sl-estou">ESTOU</td>
-              <td><span class="lbl">Estou em</span><input class="fi" type="text"></td>
-            </tr>
-            <tr><td style="padding:0;">
-              <div class="srow" style="grid-template-columns:1fr 80px 80px 1fr;">
-                <div class="srow-b cc"><span class="lbl">Coord (N)</span><input class="fi" type="text" placeholder="__º __' __''"></div>
-                <div class="srow-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;">Freguesia</div>
-                <div class="srow-b cc" colspan="2"><input class="fi" type="text"></div>
-                <div class="cc"></div>
-              </div>
-            </td></tr>
-            <tr><td style="padding:0;">
-              <div class="srow" style="grid-template-columns:1fr 80px 80px 1fr;">
-                <div class="srow-b cc"><span class="lbl">SIRESP (W)</span><input class="fi" type="text" placeholder="__º __' __''"></div>
-                <div class="srow-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;">Município</div>
-                <div class="srow-b cc" colspan="2"><input class="fi" type="text"></div>
-                <div class="cc"></div>
-              </div>
-            </td></tr>
-
-            <!-- VEJO -->
-            <tr>
-              <td rowspan="8" class="slbl sl-vejo">VEJO</td>
-              <td style="padding:0;"><div class="srow" style="grid-template-columns:65px 1fr;">
-                <div class="rlbl" style="background:#ffcdd2;">Incêndio:</div>
-                <div class="cb">
-                  <span class="copt co-r" onclick="tog(this)">Activo (Curso)</span>
-                  <span class="copt co-g" onclick="tog(this)">Rescaldo (Conclusão)</span>
-                  <span class="copt co-b" onclick="tog(this)">Dominado (Resolução)</span>
-                  <span class="copt"     onclick="tog(this)">Extinto (Finalizado)</span>
-                </div>
-              </div></td>
-            </tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:40px 1fr;">
-              <div class="rlbl">Com:</div>
-              <div class="cb">
-                <span class="copt co-r" onclick="tog(this)">Fogo à vista</span>
-                <span class="copt"     onclick="tog(this)">Sem fogo à vista</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:40px 1fr;">
-              <div class="rlbl">Em:</div>
-              <div class="cb">
-                <span class="copt co-r" onclick="tog(this)">Habitação</span>
-                <span class="copt co-r" onclick="tog(this)">Comércio</span>
-                <span class="copt co-r" onclick="tog(this)">Industria</span>
-                <span class="copt co-r" onclick="tog(this)">Outro</span>
-                <input class="fi-il" type="text" style="width:80px;">
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:90px 1fr;">
-              <div class="rlbl">Tipo de edifício:</div>
-              <div class="cb">
-                <span class="copt" onclick="tog(this)">Unifamiliar</span>
-                <span class="copt" onclick="tog(this)">Hosp. / Lar / Escola</span>
-                <span class="copt" onclick="tog(this)">Edifício Grande Altura</span>
-                <span class="copt" onclick="tog(this)">Militar / Segurança</span>
-                <span class="copt" onclick="tog(this)">Utilidade Pública</span>
-                <span class="copt" onclick="tog(this)">Outro</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:70px 1fr;">
-              <div class="rlbl" style="background:#ffcdd2;">Propagação</div>
-              <div class="cb">
-                <span class="copt co-r" onclick="tog(this)">Horizontal</span>
-                <span class="copt co-r" onclick="tog(this)">Vertical</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:65px 1fr;">
-              <div class="rlbl" style="background:#bbdefb;">Hidrantes</div>
-              <div class="cb">
-                <span class="copt co-b" onclick="tog(this)">Marco de água</span>
-                <span class="copt co-b" onclick="tog(this)">Outro</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:90px 1fr;">
-              <div class="rlbl" style="background:#c8e6c9;">Pontos Sensíveis:</div>
-              <div class="cb">
-                <span class="copt co-g" onclick="tog(this)">Habitações</span>
-                <span class="copt co-g" onclick="tog(this)">Industria</span>
-                <span class="copt co-g" onclick="tog(this)">Comércio</span>
-                <span class="copt co-g" onclick="tog(this)">Outro</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow srow2">
-              <div class="srow-b cc" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
-                <b style="font-size:10px;">Faço: Reconhecimento</b><span class="copt co-b" onclick="tog(this)" style="margin:0 2px;"></span>
-                <b style="font-size:10px;">Salvamentos</b><span class="copt co-b" onclick="tog(this)" style="margin:0 2px;"></span>
-              </div>
-              <div class="cc" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
-                <b style="font-size:10px;">Estb. Meios</b><span class="copt co-b" onclick="tog(this)" style="margin:0 2px;"></span>
-                <b style="font-size:10px;">Proteção Exposições</b><span class="copt co-b" onclick="tog(this)" style="margin:0 2px;"></span>
-              </div>
-            </div></td></tr>
-
-            <!-- FAÇO -->
-            <tr>
-              <td rowspan="2" class="slbl sl-faco">FAÇO</td>
-              <td style="padding:0;"><div class="cb" style="padding:3px;">
-                <span class="copt co-b" onclick="tog(this)">Reconhecimento</span>
-                <span class="copt co-b" onclick="tog(this)">Salvamentos</span>
-                <span class="copt co-b" onclick="tog(this)">Estb. Meios de Ação</span>
-                <span class="copt co-b" onclick="tog(this)">Proteção às Exposições</span>
-                <span class="copt co-b" onclick="tog(this)">Estratégia Ofensiva</span>
-                <span class="copt co-b" onclick="tog(this)">Estratégia Defensiva</span>
-                <span class="copt co-b" onclick="tog(this)">Rescaldo</span>
-                <span class="copt co-b" onclick="tog(this)">Vigilância</span>
-              </div></td>
-            </tr>
-            <tr><td style="padding:2px 4px;">
-              <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                <span class="lbl" style="display:inline;">Observações:</span>
-                <input class="fi-il" type="text" style="width:85%;flex:1;">
-              </div>
-            </td></tr>
-
-            <!-- PEÇO -->
-            <tr>
-              <td rowspan="2" class="slbl sl-peco">PEÇO</td>
-              <td style="padding:0;"><div class="srow" style="grid-template-columns:90px 1fr;">
-                <div class="rlbl" style="background:#c8e6c9;white-space:normal;text-align:center;">Solicito (quantif.):</div>
-                <div class="cb">
-                  <span class="copt co-g" onclick="tog(this)">VUCI/VECI</span>
-                  <span class="copt co-g" onclick="tog(this)">VMER</span>
-                  <span class="copt co-g" onclick="tog(this)">VTT</span>
-                  <span class="copt co-g" onclick="tog(this)">SMPC</span>
-                  <span class="copt co-g" onclick="tog(this)">VE/VP</span>
-                  <span class="copt co-g" onclick="tog(this)">Elemento de Comando</span>
-                  <span class="copt co-g" onclick="tog(this)">ABSC / ABTD / ABTM</span>
-                  <span class="copt co-g" onclick="tog(this)">Outro</span>
-                </div>
-              </div></td>
-            </tr>
-            <tr><td style="padding:2px 4px;">
-              <div style="display:flex;align-items:center;gap:4px;">
-                <span style="font-size:10px;font-weight:700;">Outros:</span>
-                <input class="fi-il" type="text" style="width:85%;flex:1;">
-              </div>
-            </td></tr>
-          </tbody>
-        </table>
-
-        <div class="row-assumo">
-          <span style="white-space:nowrap;font-size:11px;">Assumo COS</span>
-          <input class="fi" type="text" placeholder="; Categoria e Nome" style="flex:1;">
-        </div>
-        <div class="row-prossigo">Prossigo com o reconhecimento!</div>
-        <div class="photo-area" id="es-photos" style="display:none;"></div>
-      </div>
-
-      <!-- ── RIGHT ── -->
-      <div class="sr">
-        <div class="rp-top">
-          <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="es-info"></div></div>
-          <div class="rp-stc"><div class="rp-hdr">SITAC</div><textarea class="rp-ta"></textarea></div>
-        </div>
-        <div class="rp-posit"><div class="rp-hdr">Pontos de Situação</div>
-          <div class="prow"><span class="plbl">2º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-          <div class="prow"><span class="plbl">3º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-          <div class="prow"><span class="plbl">4º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-        </div>
-        <div class="rp-meios"><div class="rp-hdr">MEIOS</div>
-          <table class="mt"><thead><tr><th>Meio</th><th>Entidade</th><th>Hr no TO</th><th>Missão</th></tr></thead><tbody id="es-meios"></tbody></table>
-        </div>
-        <div class="rp-pass">Passagem de COS às <input class="fi-il" type="time" style="width:70px;"> , para <input class="fi-il" type="text" style="flex:1;width:80px;"></div>
-      </div>
-    </div><!-- /form-es -->
-
-
-    <!-- ════════════════════════════════════════════════════
-         FICHA 3 – ACIDENTES RODOVIÁRIOS
-    ════════════════════════════════════════════════════ -->
-    <div id="form-ac" class="sgo-sheet">
-
-      <!-- ── LEFT ── -->
-      <div class="sl">
-        <div class="sht" style="background:#f57f17;color:#000;">
-          <div class="sht-main">Sistema de Gestão de Operações</div>
-          <div class="sht-sub">Guia de Comando</div>
-          <div class="sht-type">Acidentes</div>
-        </div>
-        <div class="bar bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
-
-        <table class="ft">
-          <colgroup><col style="width:18px"><col></colgroup>
-          <tbody>
-            <!-- Hr Posit row -->
-            <tr><td colspan="2" style="padding:0;">
-              <div class="srow srow3 bar-yrow">
-                <div class="srow-b cc"><span class="lbl">Hr Posit</span><input class="fi" type="time"></div>
-                <div class="srow-b cc"><span class="lbl">Ocorr. Nº</span><input class="fi" type="text"></div>
-                <div class="cc"><span class="lbl">Canal Manobra</span><input class="fi" type="text"></div>
-              </div>
-            </td></tr>
-
-            <!-- ESTOU -->
-            <tr>
-              <td rowspan="4" class="slbl sl-estou">ESTOU</td>
-              <td style="padding:0;"><div class="srow srow2">
-                <div class="srow-b cc"><span class="lbl">Estou em (Via)</span><input class="fi" type="text"></div>
-                <div class="cc"><span class="lbl">Km / Nº</span><input class="fi" type="text"></div>
-              </div></td>
-            </tr>
-            <tr><td style="padding:0;"><div class="srow srow2">
-              <div class="srow-b cc"><span class="lbl">Sentido</span><input class="fi" type="text"></div>
-              <div class="cc" style="display:flex;align-items:center;gap:4px;padding:2px 5px;">
-                <span style="font-size:10px;font-weight:700;">Coord (N):</span>
-                <input class="fi-il" type="text" style="flex:1;">
-              </div>
-            </div></td>
-            </tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:1fr 80px 1fr;">
-              <div class="srow-b cc"><span class="lbl">SIRESP (W)</span><input class="fi" type="text" placeholder="__º __' __''"></div>
-              <div class="srow-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;">Freguesia</div>
-              <div class="cc"><input class="fi" type="text"></div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:1fr 80px 1fr;">
-              <div class="srow-b cc"><span class="lbl">Coord (N)</span><input class="fi" type="text" placeholder="__º __' __''"></div>
-              <div class="srow-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;">Município</div>
-              <div class="cc"><input class="fi" type="text"></div>
-            </div></td></tr>
-
-            <!-- VEJO -->
-            <tr>
-              <td rowspan="7" class="slbl sl-vejo">VEJO</td>
-              <td style="padding:0;"><div class="srow" style="grid-template-columns:65px 1fr;">
-                <div class="rlbl" style="background:#ffcdd2;">Acidente:</div>
-                <div class="cc">
-                  <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px;">
-                    <b style="font-size:10px;">Despiste de:</b><input class="fi-il" type="text" style="flex:1;">
-                  </div>
-                  <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px;">
-                    <b style="font-size:10px;">Colisão entre:</b><input class="fi-il" type="text" style="flex:1;">
-                  </div>
-                  <div style="display:flex;align-items:center;gap:4px;">
-                    <b style="font-size:10px;">Outra:</b><input class="fi-il" type="text" style="flex:1;">
-                  </div>
-                </div>
-              </div></td>
-            </tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:55px 1fr;">
-              <div class="rlbl" style="background:#ffcdd2;">Vítimas:</div>
-              <div class="cc" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-                <span style="font-size:10px;font-weight:700;">Leves <input class="fi-il" type="number" style="width:35px;"></span>
-                <span style="font-size:10px;font-weight:700;">Graves <input class="fi-il" type="number" style="width:35px;"></span>
-                <span style="font-size:10px;font-weight:700;">Mortos <input class="fi-il" type="number" style="width:35px;"></span>
-                <span style="font-size:10px;font-weight:700;">Desaparecidos <input class="fi-il" type="number" style="width:35px;"></span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:75px 1fr;">
-              <div class="rlbl" style="background:#ffcdd2;">Encarcerados:</div>
-              <div class="cb">
-                <span class="copt co-r" onclick="tog(this)">Mecânico</span>
-                <span class="copt co-pk" onclick="tog(this)">Veículo 1</span>
-                <span class="copt co-b" onclick="tog(this)">Físico Tipo I</span>
-                <span class="copt co-pk" onclick="tog(this)">Veículo 2</span>
-                <span class="copt co-b" onclick="tog(this)">Físico Tipo II</span>
-                <span class="copt co-pk" onclick="tog(this)">Veículo 3</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:40px 1fr;">
-              <div class="rlbl" style="background:#ffe0b2;">Via:</div>
-              <div class="cc" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
-                <span class="copt co-br" onclick="tog(this)">Cortada</span>
-                <span class="copt co-br" onclick="tog(this)">Condicionada</span>
-                <span style="font-size:10px;font-weight:700;">Sentido: <input class="fi-il" type="text" style="width:40px;"> / <input class="fi-il" type="text" style="width:40px;"></span>
-                <span style="font-size:10px;font-weight:700;">Sentido: <input class="fi-il" type="text" style="width:40px;"> / <input class="fi-il" type="text" style="width:40px;"></span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:80px 1fr;">
-              <div class="rlbl" style="background:#c8e6c9;white-space:normal;text-align:center;">Carga do Veículo:</div>
-              <div class="cc">
-                <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px;">
-                  <b style="font-size:10px;">Tipo de Carga:</b><input class="fi-il" type="text" style="flex:1;">
-                </div>
-                <div style="display:flex;align-items:center;gap:4px;">
-                  <b style="font-size:10px;">Afetação da carga:</b><input class="fi-il" type="text" style="flex:1;">
-                </div>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div class="srow" style="grid-template-columns:120px 1fr;">
-              <div class="rlbl">Condições Meteorológicas:</div>
-              <div class="cc" style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;">
-                <b style="font-size:10px;">Vento:</b> <input class="fi-il" type="text" style="width:50px;"> <span style="font-size:10px;">a</span>
-                <input class="fi-il" type="number" style="width:38px;"> <b style="font-size:10px;">km/h</b>
-                <b style="font-size:10px;">Ar:</b> <input class="fi-il" type="number" style="width:38px;"> <b style="font-size:10px;">ºC</b>
-                <input class="fi-il" type="number" style="width:38px;"> <b style="font-size:10px;">%HR</b>
-              </div>
-            </div></td></tr>
-            <tr><td colspan="1" style="padding:2px 4px;background:#f9f9f9;">
-              <div style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;">
-                P.Sit.Inicial: <input class="fi-il" type="text" style="flex:1;">
-              </div>
-            </td></tr>
-
-            <!-- FAÇO -->
-            <tr>
-              <td class="slbl sl-faco">FAÇO</td>
-              <td style="padding:0;"><div class="srow" style="grid-template-columns:55px 1fr;">
-                <div class="rlbl" style="background:#bbdefb;">Faço:</div>
-                <div class="cb">
-                  <span class="copt co-b" onclick="tog(this)">Zonas Trabalho</span>
-                  <span class="copt co-b" onclick="tog(this)">Abordagem às vítimas</span>
-                  <span class="copt co-b" onclick="tog(this)">Estabilização</span>
-                  <span class="copt co-b" onclick="tog(this)">Criação de Espaço</span>
-                </div>
-              </div></td>
-            </tr>
-
-            <!-- SOLICITO -->
-            <tr>
-              <td class="slbl sl-solicito">SOLICITO</td>
-              <td style="padding:0;"><div class="srow" style="grid-template-columns:90px 1fr;">
-                <div class="rlbl" style="background:#c8e6c9;white-space:normal;text-align:center;">Solicito (quantif.):</div>
-                <div class="cb">
-                  <span class="copt co-g" onclick="tog(this)">VMER</span>
-                  <span class="copt co-g" onclick="tog(this)">VSAT / VSAE</span>
-                  <span class="copt co-g" onclick="tog(this)">ABSC</span>
-                  <span class="copt co-g" onclick="tog(this)">Outros</span>
-                  <input class="fi-il" type="text" style="width:80px;">
-                </div>
-              </div></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="row-assumo">
-          <span style="white-space:nowrap;font-size:11px;">Assumo COS</span>
-          <input class="fi" type="text" placeholder="; Categoria e Nome" style="flex:1;">
-        </div>
-        <div class="row-prossigo">Prossigo com o reconhecimento!</div>
-        <div class="photo-area" id="ac-photos" style="display:none;"></div>
-      </div>
-
-      <!-- ── RIGHT ── -->
-      <div class="sr">
-        <div class="rp-top">
-          <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="ac-info"></div></div>
-          <div class="rp-stc"><div class="rp-hdr">SITAC</div><textarea class="rp-ta"></textarea></div>
-        </div>
-        <div class="rp-posit"><div class="rp-hdr">Pontos de Situação</div>
-          <div class="prow"><span class="plbl">2º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-          <div class="prow"><span class="plbl">3º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-          <div class="prow"><span class="plbl">4º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-        </div>
-        <div class="rp-meios"><div class="rp-hdr">MEIOS</div>
-          <table class="mt"><thead><tr><th>Meio</th><th>Entidade</th><th>Hr no TO</th><th>Missão</th></tr></thead><tbody id="ac-meios"></tbody></table>
-        </div>
-        <div class="rp-pass">Passagem de COS às <input class="fi-il" type="time" style="width:70px;"> , para <input class="fi-il" type="text" style="flex:1;width:80px;"></div>
-      </div>
-    </div><!-- /form-ac -->
-
-
-    <!-- ════════════════════════════════════════════════════
-         FICHA 4 – NRBQ / MATÉRIAS PERIGOSAS
-    ════════════════════════════════════════════════════ -->
-    <div id="form-nb" class="sgo-sheet">
-
-      <!-- ── LEFT ── -->
-      <div class="sl">
-        <div class="sht" style="background:#1a237e;color:#fff;">
-          <div class="sht-main">Sistema de Gestão de Operações</div>
-          <div class="sht-sub">Guia de Comando</div>
-          <div class="sht-type">Acidentes com Matérias Perigosas</div>
-        </div>
-        <div class="bar bar-blue">Ponto de Situação Inicial / Reconhecimento NRBQ</div>
-
-        <table class="ft">
-          <colgroup><col style="width:18px"><col></colgroup>
-          <tbody>
-            <!-- Hr Posit row -->
-            <tr><td colspan="2" style="padding:0;">
-              <div class="srow srow3 bar-yrow">
-                <div class="srow-b cc"><span class="lbl">Hr Posit</span><input class="fi" type="time"></div>
-                <div class="srow-b cc"><span class="lbl">Ocorr. Nº</span><input class="fi" type="text"></div>
-                <div class="cc"><span class="lbl">Canal Manobra</span><input class="fi" type="text"></div>
-              </div>
-            </td></tr>
-
-            <!-- ESTOU -->
-            <tr>
-              <td rowspan="5" class="slbl sl-estou">ESTOU</td>
-              <td style="padding:0;"><div class="srow srow2">
-                <div class="srow-b cc"><span class="lbl">Local</span><input class="fi" type="text"></div>
-                <div class="cc"><span class="lbl">Freguesia</span><input class="fi" type="text"></div>
-              </div></td>
-            </tr>
-            <tr><td style="padding:0;"><div class="srow srow2">
-              <div class="srow-b cc"><span class="lbl">Coord WGS84 (N)</span><input class="fi" type="text" placeholder="__º __' __''"></div>
-              <div class="cc"><span class="lbl">Concelho</span><input class="fi" type="text"></div>
-            </div></td></tr>
-            <tr><td><span class="lbl">Coord WGS84 (W)</span><input class="fi" type="text" placeholder="__º __' __''"></td></tr>
-            <tr><td style="padding:0;">
-              <div style="display:grid;grid-template-columns:120px 1fr;border-bottom:0.5px solid #000;">
-                <div class="rlbl">Caracterização do Local:</div>
-                <div class="cb">
-                  <span class="copt" onclick="tog(this)">Via Pública / Linha Férrea</span>
-                  <span class="copt" onclick="tog(this)">Edifício</span>
-                </div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;">
-                <div class="srow-b cc"><span class="lbl">Km / Sentido</span><input class="fi" type="text"></div>
-                <div class="cc"><span class="lbl">Tipo</span><input class="fi" type="text"></div>
-              </div>
-            </td></tr>
-            <tr><td style="padding:0;"><div class="srow srow2">
-              <div class="srow-b cc"><span class="lbl">Tipo Terreno</span><input class="fi" type="text"></div>
-              <div class="cc"><span class="lbl">Tipo Vegetação</span><input class="fi" type="text"></div>
-            </div></td></tr>
-
-            <!-- VEJO -->
-            <tr>
-              <td rowspan="8" class="slbl sl-vejo">VEJO</td>
-              <td style="padding:0;">
-                <div style="display:grid;grid-template-columns:115px 1fr;">
-                  <div class="rlbl" style="background:#ffcdd2;white-space:normal;text-align:center;">Mercadorias e Substâncias Perigosas</div>
-                  <div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid #000;">
-                      <div class="srow-b cc"><span class="lbl">Nº Perigo</span><input class="fi" type="text"></div>
-                      <div class="cc"><span class="lbl">Quantidade Estimada</span><input class="fi" type="text"></div>
-                    </div>
-                    <div class="cc"><span class="lbl">Nº ONU</span><input class="fi" type="text"></div>
-                    <div class="cc"><span class="lbl">Descrição Visual</span><input class="fi" type="text"></div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr><td style="padding:0;"><div style="display:grid;grid-template-columns:95px 1fr;">
-              <div class="rlbl" style="background:#fff9c4;white-space:normal;text-align:center;">Natureza do Incidente</div>
-              <div class="cb">
-                <span class="copt co-y" onclick="tog(this)">Fuga (vapor/gás)</span>
-                <span class="copt co-y" onclick="tog(this)">Derrame (sólido/líquido)</span>
-                <span class="copt co-o" onclick="tog(this)">Incêndio</span>
-                <span class="copt co-o" onclick="tog(this)">Explosão</span>
-                <div style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700;margin:2px 1px;">Outro: <input class="fi-il" type="text" style="width:80px;"></div>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div style="display:grid;grid-template-columns:95px 1fr;">
-              <div class="rlbl" style="background:#ffe0b2;white-space:normal;text-align:center;">Matéria não Identificada – Suspeita NRBQ</div>
-              <div class="cc">
-                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:2px;">
-                  <b style="font-size:10px;">Cheiro:</b>
-                  <span class="copt" onclick="tog(this)">Sim</span>
-                  <span class="copt" onclick="tog(this)">Não</span>
-                  <b style="font-size:10px;">Tipo:</b><input class="fi-il" type="text" style="flex:1;width:80px;">
-                </div>
-                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:2px;">
-                  <b style="font-size:10px;">Cor:</b><input class="fi-il" type="text" style="width:70px;">
-                  <b style="font-size:10px;">Origem:</b><input class="fi-il" type="text" style="flex:1;">
-                </div>
-                <div style="display:flex;align-items:center;gap:4px;">
-                  <b style="font-size:10px;">Outro:</b><input class="fi-il" type="text" style="flex:1;">
-                </div>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div style="display:grid;grid-template-columns:55px 1fr;">
-              <div class="rlbl" style="background:#ffcdd2;">Vítimas:</div>
-              <div class="cc">
-                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:2px;">
-                  <span style="font-size:10px;font-weight:700;">Nº Vítimas <input class="fi-il" type="number" style="width:35px;"></span>
-                  <span class="copt co-r" onclick="tog(this)" style="font-size:10px;">Leves</span>
-                  <input class="fi-il" type="number" style="width:35px;">
-                  <span class="copt co-r" onclick="tog(this)" style="font-size:10px;">Graves</span>
-                  <input class="fi-il" type="number" style="width:35px;">
-                  <span class="copt co-r" onclick="tog(this)" style="font-size:10px;">S/Vítimas</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:5px;">
-                  <b style="font-size:10px;">Principais Sintomas:</b><input class="fi-il" type="text" style="flex:1;">
-                  <b style="font-size:10px;">Nº Mortos:</b><input class="fi-il" type="number" style="width:35px;">
-                </div>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;"><div style="display:grid;grid-template-columns:120px 1fr;">
-              <div class="rlbl">Condições Meteorológicas:</div>
-              <div class="cc" style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;">
-                <span style="font-size:10px;font-weight:700;">Dir. Vento:</span><input class="fi-il" type="text" style="width:50px;">
-                <span style="font-size:10px;font-weight:700;">Estado Céu:</span><input class="fi-il" type="text" style="width:60px;">
-                <br style="width:100%;">
-                <span style="font-size:10px;font-weight:700;">Intensidade:</span>
-                <span class="copt" onclick="tog(this)">f</span>
-                <span class="copt" onclick="tog(this)">M</span>
-                <span class="copt" onclick="tog(this)">F</span>
-                <span style="font-size:10px;font-weight:700;">Temp:</span><input class="fi-il" type="number" style="width:38px;"><span style="font-size:10px;font-weight:700;">ºC</span>
-                <span style="font-size:10px;font-weight:700;">Vel.:</span><input class="fi-il" type="number" style="width:38px;"><span style="font-size:10px;font-weight:700;">km/h</span>
-                <span style="font-size:10px;font-weight:700;">Precipitação:</span>
-                <span class="copt" onclick="tog(this)">Sim</span>
-                <span class="copt" onclick="tog(this)">Não</span>
-              </div>
-            </div></td></tr>
-            <tr><td style="padding:0;">
-              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid #000;">
-                <div class="srow-b cc" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
-                  <b style="font-size:10px;">Autoridade no Local:</b>
-                  <span class="copt" onclick="tog(this)">S</span><span class="copt" onclick="tog(this)">N</span>
-                  <span class="copt" onclick="tog(this)">GNR</span>
-                  <span class="copt" onclick="tog(this)">PSP</span>
-                </div>
-                <div class="cc" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
-                  <b style="font-size:10px;">Faixas Rodagem:</b>
-                  <span class="copt" onclick="tog(this)">Desobstruídas</span>
-                  <span class="copt" onclick="tog(this)">Obstruídas (Nº)</span>
-                  <span class="copt" onclick="tog(this)">1</span>
-                  <span class="copt" onclick="tog(this)">2</span>
-                  <span class="copt" onclick="tog(this)">3</span>
-                  <span class="copt" onclick="tog(this)">4</span>
-                </div>
-              </div>
-              <div class="cc" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
-                <b style="font-size:10px;">Outros Meios:</b>
-                <span class="copt" onclick="tog(this)">INEM (VMER/SIV)</span>
-                <span class="copt" onclick="tog(this)">RSB</span>
-                <span class="copt" onclick="tog(this)">GIPS</span>
-                <span style="font-size:10px;font-weight:700;">Outros:</span><input class="fi-il" type="text" style="flex:1;">
-              </div>
-            </td></tr>
-
-            <!-- FAÇO -->
-            <tr>
-              <td class="slbl sl-faco">FAÇO</td>
-              <td style="padding:0;"><div style="display:grid;grid-template-columns:55px 1fr;">
-                <div class="rlbl" style="background:#bbdefb;">Faço:</div>
-                <div class="cb">
-                  <span class="copt co-b" onclick="tog(this)">Proteção Exposições</span>
-                  <span class="copt co-b" onclick="tog(this)">Desobstrução / Limpeza Via</span>
-                  <span class="copt co-b" onclick="tog(this)">Delimitação Zonas (quente, morna, fria) / Corredores</span>
-                </div>
-              </div></td>
-            </tr>
-
-            <!-- SOLICITO -->
-            <tr>
-              <td class="slbl sl-solicito">SOLICITO</td>
-              <td style="padding:0;"><div style="display:grid;grid-template-columns:90px 1fr;">
-                <div class="rlbl" style="background:#c8e6c9;white-space:normal;text-align:center;">Solicito (quantif.):</div>
-                <div class="cb">
-                  <span class="copt co-g" onclick="tog(this)">VUCI/VPMA/VTTU/VSAT/ABSC</span>
-                  <span class="copt co-g" onclick="tog(this)">Autoridade (GNR/PSP)</span>
-                  <span class="copt co-g" onclick="tog(this)">Elemento de Comando (PCO)</span>
-                  <span class="copt co-g" onclick="tog(this)">Outros</span>
-                </div>
-              </div></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="row-assumo">
-          <span style="white-space:nowrap;font-size:11px;">Assumo COS</span>
-          <input class="fi" type="text" placeholder="; Categoria e Nome" style="flex:1;">
-        </div>
-        <div class="row-prossigo">Prossigo com o reconhecimento!</div>
-        <div class="photo-area" id="nb-photos" style="display:none;"></div>
-      </div>
-
-      <!-- ── RIGHT ── -->
-      <div class="sr">
-        <div class="rp-top">
-          <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="nb-info"></div></div>
-          <div class="rp-stc"><div class="rp-hdr">SITAC</div><textarea class="rp-ta"></textarea></div>
-        </div>
-        <div class="rp-posit"><div class="rp-hdr">Ponto de Situação</div>
-          <div class="prow"><span class="plbl">2º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-          <div class="prow"><span class="plbl">3º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-          <div class="prow"><span class="plbl">4º POSIT</span><div class="phrs"><input class="fi-il" type="time" style="width:70px;"></div><div class="ptxt"><input class="fi-il" type="text" style="width:100%;"></div></div>
-        </div>
-        <div class="rp-meios"><div class="rp-hdr">Meios</div>
-          <table class="mt"><thead><tr><th>Meio</th><th>Entidade</th><th>Hr no TO</th><th>Missão</th></tr></thead><tbody id="nb-meios"></tbody></table>
-        </div>
-      </div>
-    </div><!-- /form-nb -->
-
-  </div><!-- /editor -->
+</div><!-- /editor -->
 </div><!-- /wrap -->
 
 <script>
-  // ── Populate right-panel helpers ──
-  function fillInfoLines(id, n) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    for (let i = 0; i < n; i++) el.innerHTML += '<div class="rp-line"></div>';
-  }
-  function fillMeios(id, n) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    for (let i = 0; i < n; i++) {
-      el.innerHTML += `<tr>
-        <td><input style="border:none;outline:none;width:100%;font-family:inherit;font-size:10px;" type="text"></td>
-        <td><input style="border:none;outline:none;width:100%;font-family:inherit;font-size:10px;" type="text"></td>
-        <td><input style="border:none;outline:none;width:60px;font-family:inherit;font-size:10px;" type="time"></td>
-        <td><input style="border:none;outline:none;width:100%;font-family:inherit;font-size:10px;" type="text"></td>
-      </tr>`;
+// ─── Init lines & meios ───
+function fillLines(id,n){const el=document.getElementById(id);if(!el)return;for(let i=0;i<n;i++){const d=document.createElement('div');d.className='rp-line';el.appendChild(d);}}
+function fillMeios(id,n){const el=document.getElementById(id);if(!el)return;for(let i=0;i<n;i++)el.innerHTML+=`<tr><td><input type="text"></td><td><input type="text"></td><td><input type="time"></td><td><input type="text"></td></tr>`;}
+['fl','es','ac','nb'].forEach(f=>{fillLines(f+'-info',12);fillMeios(f+'-meios',10);});
+
+// ─── Navigation ───
+let currentForm=null;
+function openSheet(type){
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('editor').classList.add('active');
+  document.getElementById('navBtns').style.display='flex';
+  ['fl','es','ac','nb'].forEach(f=>{const el=document.getElementById('form-'+f);if(el)el.classList.remove('vis');});
+  const t=document.getElementById('form-'+type);
+  if(t)t.classList.add('vis');
+  currentForm=type;
+  window.scrollTo(0,0);
+  setTimeout(()=>initCanvas(type+'-sitac'),80);
+}
+function goHome(){if(confirm('Voltar ao menu? Os dados serão perdidos.'))location.reload();}
+
+// ─── Checkboxes ───
+function tog(el){el.classList.toggle('on');}
+
+// ─── SITAC Canvas Drawing ───
+const CS={};// canvas states
+const PALETTE=['#000000','#c62828','#1565c0','#2e7d32','#e65100','#fdd835','#ffffff'];
+const SZLBLS=['S','M','G'];
+const SZVALS=[2,4,9];
+
+function initCanvas(id){
+  const cv=document.getElementById(id);
+  if(!cv)return;
+  // Size canvas to actual pixel dimensions
+  const w=cv.parentElement.clientWidth||200;
+  const h=cv.parentElement.clientHeight||150;
+  if(!CS[id]){
+    cv.width=w; cv.height=h;
+    const ctx=cv.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+    CS[id]={color:'#000000',size:2,drawing:false,lx:0,ly:0};
+    buildSitacToolbar(id);
+    cv.addEventListener('mousedown', e=>{startD(e,id);});
+    cv.addEventListener('mousemove', e=>{moveD(e,id);});
+    cv.addEventListener('mouseup',   ()=>stopD(id));
+    cv.addEventListener('mouseleave',()=>stopD(id));
+    cv.addEventListener('touchstart',e=>{e.preventDefault();startD(e.touches[0],id);},{passive:false});
+    cv.addEventListener('touchmove', e=>{e.preventDefault();moveD(e.touches[0],id);},{passive:false});
+    cv.addEventListener('touchend',  ()=>stopD(id));
+  } else {
+    // already init, just resize if needed
+    if(cv.width!==w||cv.height!==h){
+      const img=cv.toDataURL();
+      cv.width=w;cv.height=h;
+      const ctx=cv.getContext('2d');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+      const im=new Image();im.onload=()=>ctx.drawImage(im,0,0);im.src=img;
     }
   }
-  // Init on load
-  ['fl','es','ac','nb'].forEach(f => {
-    fillInfoLines(f+'-info', 10);
-    fillMeios(f+'-meios', 8);
+}
+
+function buildSitacToolbar(cid){
+  const tbId=cid.replace('sitac','stb');
+  const tb=document.getElementById(tbId);
+  if(!tb||tb._built)return;
+  tb._built=true;
+  // Colour dots
+  PALETTE.forEach((c,i)=>{
+    const d=document.createElement('span');
+    d.className='cdot'+(i===0?' sact':'');
+    d.style.background=c;
+    if(c==='#ffffff')d.style.border='2px solid #999';
+    if(c==='#fdd835')d.style.border='2px solid #999';
+    d.title=c==='#ffffff'?'Apagador':c;
+    d.onclick=()=>{
+      CS[cid].color=c;
+      CS[cid].size=c==='#ffffff'?18:CS[cid].size;
+      tb.querySelectorAll('.cdot').forEach(x=>x.classList.remove('sact'));
+      d.classList.add('sact');
+    };
+    tb.appendChild(d);
   });
-
-  // ── Navigation ──
-  function openSheet(type) {
-    document.getElementById('home').classList.remove('active');
-    document.getElementById('editor').classList.add('active');
-    document.getElementById('navBtns').style.display = 'flex';
-    // Hide all, show target
-    ['fl','es','ac','nb'].forEach(f => document.getElementById('form-'+f).classList.remove('vis'));
-    document.getElementById('form-'+type).classList.add('vis');
-    window.scrollTo(0,0);
-    currentForm = type;
-  }
-  function goHome() {
-    if (confirm('Sair da ficha atual? Os dados não preenchidos serão perdidos.')) location.reload();
-  }
-  let currentForm = null;
-
-  // ── Checkbox toggle ──
-  function tog(el) { el.classList.toggle('on'); }
-
-  // ── Photo upload ──
-  document.getElementById('camInput').addEventListener('change', function(e) {
-    if (!currentForm) return;
-    const area = document.getElementById(currentForm+'-photos');
-    if (!area) return;
-    area.style.display = 'grid';
-    Array.from(e.target.files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        const img = document.createElement('img');
-        img.src = ev.target.result;
-        img.className = 'photo-item';
-        area.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
+  // Separator
+  const sep=document.createElement('span');
+  sep.style.cssText='display:inline-block;width:1px;height:13px;background:#ccc;margin:0 3px;vertical-align:middle';
+  tb.appendChild(sep);
+  // Size buttons
+  SZLBLS.forEach((lbl,i)=>{
+    const b=document.createElement('button');
+    b.textContent=lbl;
+    b.className=i===0?'sact':'';
+    b.onclick=()=>{
+      CS[cid].size=SZVALS[i];
+      tb.querySelectorAll('button').forEach(x=>x.classList.remove('sact'));
+      b.classList.add('sact');
+    };
+    tb.appendChild(b);
   });
+}
 
-  // ── Export JPG ──
-  async function exportJPG() {
-    if (!currentForm) return;
-    const ficha = document.getElementById('form-'+currentForm);
-    const canvas = await html2canvas(ficha, { scale: 2, useCORS: true });
-    const a = document.createElement('a');
-    const names = { fl:'Florestais', es:'Estruturais', ac:'Acidentes', nb:'NRBQ' };
-    a.download = 'SGO_' + (names[currentForm]||currentForm) + '.jpg';
-    a.href = canvas.toDataURL('image/jpeg', 0.92);
-    a.click();
-  }
+function getXY(e,cv){
+  const r=cv.getBoundingClientRect();
+  return{x:(e.clientX-r.left)*(cv.width/r.width),y:(e.clientY-r.top)*(cv.height/r.height)};
+}
+function startD(e,id){
+  const cv=document.getElementById(id);const s=CS[id];
+  s.drawing=true;const p=getXY(e,cv);s.lx=p.x;s.ly=p.y;
+}
+function moveD(e,id){
+  const s=CS[id];if(!s||!s.drawing)return;
+  const cv=document.getElementById(id);const ctx=cv.getContext('2d');
+  const p=getXY(e,cv);
+  ctx.beginPath();ctx.moveTo(s.lx,s.ly);ctx.lineTo(p.x,p.y);
+  ctx.strokeStyle=s.color;ctx.lineWidth=s.size;
+  ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+  s.lx=p.x;s.ly=p.y;
+}
+function stopD(id){if(CS[id])CS[id].drawing=false;}
+function clearCanvas(id){
+  const cv=document.getElementById(id);if(!cv)return;
+  const ctx=cv.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+}
+
+window.addEventListener('resize',()=>{
+  ['fl','es','ac','nb'].forEach(f=>{
+    const el=document.getElementById('form-'+f);
+    if(el&&el.classList.contains('vis'))setTimeout(()=>initCanvas(f+'-sitac'),50);
+  });
+});
+
+// ─── Photo upload ───
+document.getElementById('camInput').addEventListener('change',function(e){
+  if(!currentForm)return;
+  const area=document.getElementById(currentForm+'-photos');
+  if(!area)return;area.style.display='grid';
+  Array.from(e.target.files).forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{const img=document.createElement('img');img.src=ev.target.result;
+      img.style.cssText='width:100%;aspect-ratio:4/3;object-fit:cover;border:0.5px solid #000;display:block';
+      area.appendChild(img);};
+    reader.readAsDataURL(file);
+  });
+});
+
+// ─── Export JPG ───
+async function exportJPG(){
+  if(!currentForm)return;
+  const ficha=document.getElementById('form-'+currentForm);
+  const names={fl:'Florestais',es:'Estruturais',ac:'Acidentes',nb:'NRBQ'};
+  const canvas=await html2canvas(ficha,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+  const a=document.createElement('a');
+  a.download='SGO_'+(names[currentForm]||currentForm)+'_'+new Date().toISOString().slice(0,10)+'.jpg';
+  a.href=canvas.toDataURL('image/jpeg',0.93);a.click();
+}
 </script>
 </body>
 </html>
