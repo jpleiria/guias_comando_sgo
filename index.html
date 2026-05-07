@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SGO Digital – Guias de Comando</title>
+<title>SGO – Guias de Comando</title>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -149,17 +149,42 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
   .sr{border-left:none;border-top:2px solid #000}
   .home-grid{grid-template-columns:1fr}
 }
+
+/* Novo campo Ponto de Transito */
+.row-transito {
+  background: #fff; /* Fundo branco conforme pedido */
+  padding: 3px 7px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 0.5px solid #777;
+}
+
+/* Campo informações como textarea para preencher todo o espaço */
+.rp-inf { flex: 1; display: flex; flex-direction: column; }
+.rp-inf textarea {
+  flex: 1;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 5px;
+  font-family: inherit;
+  font-size: 11px;
+  resize: none;
+  background: transparent;
+}
 </style>
 </head>
 <body>
 
 <header class="no-print">
-  <strong>⚠ SGO Digital</strong>
+  <strong>⚠ SGO - CBSLeiria</strong>
   <div class="hnav" id="navBtns" style="display:none">
     <button class="hbtn" onclick="goHome()">☰ Menu</button>
     <button class="hbtn" onclick="window.print()">🖨 Imprimir</button>
     <button class="hbtn hbtn-red" onclick="exportJPG()">⬇ Exportar JPG</button>
-    <label class="hbtn" style="cursor:pointer">📷 Foto<input type="file" id="camInput" accept="image/*" multiple capture="environment" style="display:none"></label>
+    <label class="hbtn" style="cursor:pointer">📷Adicionar Foto<input type="file" id="camInput" accept="image/*" multiple capture="environment" style="display:none"></label>
   </div>
 </header>
 
@@ -196,7 +221,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
   <div><!-- LEFT -->
     <div class="hdr-strip" style="background:#1b5e20;color:#fff">
       <div class="hdr-main">Sistema de Gestão de Operações</div>
-      <div class="hdr-sub">Guia de Comando</div>
+      <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
       <div class="hdr-type">Incêndios Florestais</div>
     </div>
     <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
@@ -338,13 +363,14 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
     </tr>
 
     </tbody></table>
+    <div class="row-transito"><span style="white-space:nowrap">Ponto de Trânsito</span><input type="text" style="flex:1"></div>
     <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" placeholder="; Categoria e Nome" style="flex:1"></div>
     <div class="row-prossigo">Prossigo com o reconhecimento!</div>
     <div id="fl-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
   </div>
   <div class="sr"><!-- RIGHT -->
     <div class="rp-top">
-      <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="fl-info"></div></div>
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea placeholder="Escreva aqui..."></textarea></div>
       <div class="rp-stc">
         <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('fl-sitac')">✕ Limpar</span></div>
         <div class="sitac-wrap"><div class="sitac-toolbar" id="fl-stb"></div><canvas class="sitac-canvas" id="fl-sitac"></canvas></div>
@@ -370,7 +396,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
   <div><!-- LEFT -->
     <div class="hdr-strip" style="background:#4e342e;color:#fff">
       <div class="hdr-main">Sistema de Gestão de Operações</div>
-      <div class="hdr-sub">Guia de Comando</div>
+      <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
       <div class="hdr-type">Incêndios Estruturais</div>
     </div>
     <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
@@ -501,13 +527,14 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
     </tr>
 
     </tbody></table>
+    <div class="row-transito"><span style="white-space:nowrap">Ponto de Trânsito</span><input type="text" style="flex:1"></div>
     <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" placeholder="; Categoria e Nome" style="flex:1"></div>
     <div class="row-prossigo">Prossigo com o reconhecimento!</div>
     <div id="es-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
   </div>
   <div class="sr"><!-- RIGHT -->
     <div class="rp-top">
-      <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="es-info"></div></div>
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea placeholder="Escreva aqui..."></textarea></div>
       <div class="rp-stc">
         <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('es-sitac')">✕ Limpar</span></div>
         <div class="sitac-wrap"><div class="sitac-toolbar" id="es-stb"></div><canvas class="sitac-canvas" id="es-sitac"></canvas></div>
@@ -533,7 +560,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
   <div><!-- LEFT -->
     <div class="hdr-strip" style="background:#fdd835;color:#000;border-bottom:3px solid #e65100">
       <div class="hdr-main">Sistema de Gestão de Operações</div>
-      <div class="hdr-sub">Guia de Comando</div>
+      <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
       <div class="hdr-type">Acidentes</div>
     </div>
     <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
@@ -658,13 +685,14 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
     </tr>
 
     </tbody></table>
+    <div class="row-transito"><span style="white-space:nowrap">Ponto de Trânsito</span><input type="text" style="flex:1"></div>
     <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" placeholder="; Categoria e Nome" style="flex:1"></div>
     <div class="row-prossigo">Prossigo com o reconhecimento!</div>
     <div id="ac-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
   </div>
   <div class="sr"><!-- RIGHT -->
     <div class="rp-top">
-      <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="ac-info"></div></div>
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea placeholder="Escreva aqui..."></textarea></div>
       <div class="rp-stc">
         <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('ac-sitac')">✕ Limpar</span></div>
         <div class="sitac-wrap"><div class="sitac-toolbar" id="ac-stb"></div><canvas class="sitac-canvas" id="ac-sitac"></canvas></div>
@@ -690,7 +718,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
   <div><!-- LEFT -->
     <div class="hdr-strip" style="background:#1a237e;color:#fff">
       <div class="hdr-main">Sistema de Gestão de Operações</div>
-      <div class="hdr-sub">Guia de Comando</div>
+      <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
       <div class="hdr-type">Acidentes com Matérias Perigosas</div>
     </div>
     <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento NRBQ</div>
@@ -854,13 +882,14 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
     </tr>
 
     </tbody></table>
+    <div class="row-transito"><span style="white-space:nowrap">Ponto de Trânsito</span><input type="text" style="flex:1"></div>
     <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" placeholder="; Categoria e Nome" style="flex:1"></div>
     <div class="row-prossigo">Prossigo com o reconhecimento!</div>
     <div id="nb-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
   </div>
   <div class="sr"><!-- RIGHT -->
     <div class="rp-top">
-      <div class="rp-inf"><div class="rp-hdr">Informações</div><div class="rp-lines" id="nb-info"></div></div>
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea placeholder="Escreva aqui..."></textarea></div>
       <div class="rp-stc">
         <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('nb-sitac')">✕ Limpar</span></div>
         <div class="sitac-wrap"><div class="sitac-toolbar" id="nb-stb"></div><canvas class="sitac-canvas" id="nb-sitac"></canvas></div>
@@ -1035,5 +1064,60 @@ async function exportJPG(){
   a.href=canvas.toDataURL('image/jpeg',0.93);a.click();
 }
 </script>
-</body>
+<script>
+// --- Funcionalidade de Auto-Save ---
+const STORAGE_KEY = 'sgo_digital_data';
+
+// Função para guardar todos os inputs e textareas
+function saveData() {
+    const data = {};
+    // Guardar inputs de texto e checkboxes
+    document.querySelectorAll('input, textarea, select').forEach(el => {
+        if (el.type === 'checkbox') {
+            data[el.id || el.name || Array.from(document.querySelectorAll('input')).indexOf(el)] = el.checked;
+        } else if (el.id || el.name) {
+            data[el.id || el.name] = el.value;
+        }
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// Função para carregar os dados
+function loadData() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    const data = JSON.parse(saved);
+    
+    document.querySelectorAll('input, textarea, select').forEach(el => {
+        const val = data[el.id || el.name];
+        if (val !== undefined) {
+            if (el.type === 'checkbox') {
+                el.checked = val;
+            } else {
+                el.value = val;
+            }
+        }
+    });
+}
+
+// Ouvir alterações em todos os campos
+document.addEventListener('input', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        saveData();
+    }
+});
+
+// Modificar a função de limpar existente para também limpar o localStorage
+// Vou injetar a limpeza dentro da função clearForms se ela existir ou no botão Limpar
+const originalClearForms = typeof clearForms === 'function' ? clearForms : null;
+window.clearFormsAndStorage = function() {
+    if(confirm('Deseja limpar todos os dados da ficha?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload(); // Recarregar é a forma mais segura de limpar tudo
+    }
+};
+
+// Executar load ao iniciar
+window.addEventListener('load', loadData);
+</script></body>
 </html>
