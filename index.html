@@ -4,49 +4,92 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SGO – Guias de Comando</title>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js">
-function goHome() {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('home').classList.add('active');
-  document.getElementById('navBtns').style.display = 'none';
-  window.scrollTo(0,0);
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+let isDrawing = false;
+let currentColor = '#ff0000';
+let currentLineWidth = 3;
+
+function openSheet(type) {
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('editor').classList.add('active');
+  document.getElementById('navBtns').style.display = 'flex';
+  document.querySelectorAll('.sgo-sheet').forEach(s => s.classList.remove('vis'));
+  const target = document.getElementById('form-' + type);
+  if (target) target.classList.add('vis');
+  localStorage.setItem('active_form_id', type);
+  setTimeout(() => initSITAC(type + '-sitac'), 100);
 }
 
-function clearCurrentSheet() {
-  if(!confirm("Deseja apagar todos os dados desta ficha?")) return;
-  const activeId = localStorage.getItem('active_form_id');
-  const container = document.getElementById('form-' + activeId);
-  if(container) {
-    // Clear standard inputs
-    container.querySelectorAll('input, textarea').forEach(el => {
-      if(el.type === 'checkbox') el.checked = false;
-      else el.value = '';
-    });
-    // Clear custom checkboxes (spans with class cbox)
-    container.querySelectorAll('.cbox').forEach(el => el.classList.remove('on'));
-    // Clear canvas if exists
-    const cv = document.getElementById(activeId + '-sitac');
-    if(cv) {
-      const ctx = cv.getContext('2d');
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      localStorage.removeItem('SGO_CANVAS_' + activeId + '-sitac');
-    }
-    saveData();
+function initSITAC(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = Math.max(1, Math.round(rect.width));
+  canvas.height = Math.max(1, Math.round(rect.height));
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const getPos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - r.left, y: clientY - r.top };
+  };
+
+  const start = (e) => {
+    isDrawing = true;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  };
+
+  const move = (e) => {
+    if (!isDrawing) return;
+    if (e.cancelable) e.preventDefault();
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = currentLineWidth;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  };
+
+  const stop = () => { isDrawing = false; ctx.closePath(); };
+
+  canvas.onmousedown = start;
+  canvas.onmousemove = move;
+  window.onmouseup = stop;
+  canvas.ontouchstart = start;
+  canvas.ontouchmove = move;
+  canvas.ontouchend = stop;
+}
+
+function setSitacColor(color, btn) {
+  currentColor = color;
+  if (btn) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.cdot').forEach(d => d.classList.remove('sact'));
+    btn.classList.add('sact');
   }
 }
 
-// Override or ensure openSheet shows the header buttons
-function openSheet(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('editor').classList.add('active');
-  document.querySelectorAll('.sgo-sheet').forEach(s => s.classList.remove('vis'));
-  const target = document.getElementById('form-' + id);
-  if(target) target.classList.add('vis');
-  document.getElementById('navBtns').style.display = 'flex';
-  localStorage.setItem('active_form_id', id);
-  window.scrollTo(0,0);
+function setSitacWidth(width, btn) {
+  currentLineWidth = Number(width) || 3;
+  if (btn) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('button').forEach(b => b.classList.remove('sact'));
+    btn.classList.add('sact');
+  }
 }
 
+function clearCanvas(id) {
+  const cv = document.getElementById(id);
+  if (!cv) return;
+  cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+}
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1258,18 +1301,6 @@ function fillMeios(id,n){const el=document.getElementById(id);if(!el)return;for(
 
 // ─── Navigation ───
 let currentForm=null;
-function openSheet(type){
-  document.getElementById('home').classList.remove('active');
-  document.getElementById('editor').classList.add('active');
-  document.getElementById('navBtns').style.display='flex';
-  ['fl','es','ac','nb','sa','ma'].forEach(f=>{const el=document.getElementById('form-'+f);if(el)el.classList.remove('vis');});
-  const t=document.getElementById('form-'+type);
-  if(t)t.classList.add('vis');
-  currentForm=type;
-  window.scrollTo(0,0);
-  // 'ma' não tem canvas SITAC — initCanvas retorna cedo se elemento não existir
-  setTimeout(()=>initCanvas(type+'-sitac'),80);
-}
 function goHome(){if(confirm('Voltar ao menu? Os dados serão perdidos.'))location.reload();}
 
 // ─── Checkboxes ───
@@ -1359,13 +1390,25 @@ document.getElementById('camInput').addEventListener('change',function(e){
 
 // ─── Export JPG ───
 async function exportJPG(){
-  if(!currentForm)return;
-  const ficha=document.getElementById('form-'+currentForm);
+  const formId=currentForm||localStorage.getItem('activeformid');
+  if(!formId)return;
+  const ficha=document.getElementById('form-'+formId);
+  if(!ficha)return;
   const names={fl:'Florestais',es:'Estruturais',ac:'Acidentes',nb:'NRBQ',sa:'DificilAcesso',ma:'MeioAereo'};
-  const canvas=await html2canvas(ficha,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+  const prevDisplay=ficha.style.display;
+  const prevVis=ficha.classList.contains('vis');
+  document.querySelectorAll('.sgo-sheet').forEach(s=>{if(s!==ficha)s.style.display='none';});
+  ficha.classList.add('vis');
+  ficha.style.display='grid';
+  window.scrollTo(0,0);
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  const canvas=await html2canvas(ficha,{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollX:0,scrollY:0});
   const a=document.createElement('a');
-  a.download='SGO_'+(names[currentForm]||currentForm)+'_'+new Date().toISOString().slice(0,10)+'.jpg';
+  a.download='SGO-'+(names[formId]||formId)+'-'+new Date().toISOString().slice(0,10)+'.jpg';
   a.href=canvas.toDataURL('image/jpeg',0.93);a.click();
+  ficha.style.display=prevDisplay||'grid';
+  if(!prevVis)ficha.classList.remove('vis');
+  document.querySelectorAll('.sgo-sheet').forEach(s=>{if(s!==ficha)s.style.display='';});
 }
 
 function goHome() {
@@ -1398,17 +1441,6 @@ function clearCurrentSheet() {
   }
 }
 
-// Override or ensure openSheet shows the header buttons
-function openSheet(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('editor').classList.add('active');
-  document.querySelectorAll('.sgo-sheet').forEach(s => s.classList.remove('vis'));
-  const target = document.getElementById('form-' + id);
-  if(target) target.classList.add('vis');
-  document.getElementById('navBtns').style.display = 'flex';
-  localStorage.setItem('active_form_id', id);
-  window.scrollTo(0,0);
-}
 
 </script>
 
@@ -1502,17 +1534,158 @@ function clearCurrentSheet() {
   }
 }
 
-// Override or ensure openSheet shows the header buttons
+
+function initSITAC(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  // Ajusta o tamanho real do canvas ao tamanho visível no ecrã
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+
+  const start = (e) => {
+    const r = canvas.getBoundingClientRect();
+    const x = (e.clientX || (e.touches ? e.touches[0].clientX : 0)) - r.left;
+    const y = (e.clientY || (e.touches ? e.touches[0].clientY : 0)) - r.top;
+    isDrawing = true;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+
+  const move = (e) => {
+    if (!isDrawing) return;
+    const r = canvas.getBoundingClientRect();
+    const x = (e.clientX || (e.touches ? e.touches[0].clientX : 0)) - r.left;
+    const y = (e.clientY || (e.touches ? e.touches[0].clientY : 0)) - r.top;
+    
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = currentColor;     // Aplica a cor selecionada
+    ctx.lineWidth = currentLineWidth;   // Aplica a espessura selecionada
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  };
+
+  // Eventos de Rato e Touch
+  canvas.onmousedown = start;
+  canvas.onmousemove = move;
+  window.onmouseup = () => { isDrawing = false; };
+  canvas.ontouchstart = start;
+  canvas.ontouchmove = move;
+  canvas.ontouchend = () => { isDrawing = false; };
+}
+
+function startDrawing(e, canvas, ctx) {
+  isDrawing = true;
+  const rect = canvas.getBoundingClientRect();
+  ctx.beginPath();
+  ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+  ctx.strokeStyle = currentColor;
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+}
+
+function draw(e, canvas, ctx) {
+  if (!isDrawing) return;
+  const rect = canvas.getBoundingClientRect();
+  ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+  ctx.stroke();
+}
+
+function stopDrawing() { isDrawing = false; }
+function setSitacColor(color) { 
+  currentColor = color; 
+}
+
+function setSitacWidth(width) { 
+  currentLineWidth = width; 
+}
 function openSheet(id) {
+  // 1. Alterna as janelas (Ecrã Inicial vs Editor)
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('editor').classList.add('active');
+  
+  // 2. Mostra apenas a ficha que foi clicada
   document.querySelectorAll('.sgo-sheet').forEach(s => s.classList.remove('vis'));
   const target = document.getElementById('form-' + id);
   if(target) target.classList.add('vis');
+  
+  // 3. Ativa a barra de botões superior e guarda o ID
   document.getElementById('navBtns').style.display = 'flex';
   localStorage.setItem('active_form_id', id);
   window.scrollTo(0,0);
+
+  // 4. LIGA O SITAC (O comando que faltava)
+  // Damos 200ms para a ficha aparecer antes de ativar o desenho
+  setTimeout(() => {
+    initSitac(); 
+  }, 200);
+setTimeout(() => { initSITAC(type + '-sitac'); }, 100);
 }
+
+// --- FUNÇÃO EXPORTAR ---
+function exportJPG() {
+  const activeId = localStorage.getItem('active_form_id');
+  const element = document.getElementById('form-' + activeId);
+  if(!element) return;
+  
+  html2canvas(element, { scale: 2 }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `SGO_${activeId}.jpg`;
+    link.href = canvas.toDataURL("image/jpeg", 0.9);
+    link.click();
+  });
+}
+
+function initSitac() {
+    const activeId = localStorage.getItem('active_form_id');
+    const canvas = document.getElementById(activeId + '-sitac');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    // Ajusta o tamanho real ao tamanho visível
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const start = (e) => {
+      const r = canvas.getBoundingClientRect();
+      const x = (e.clientX || e.touches[0].clientX) - r.left;
+      const y = (e.clientY || e.touches[0].clientY) - r.top;
+      isDrawing = true;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+   const move = (e) => {
+  if (!isDrawing) return;
+  const r = canvas.getBoundingClientRect();
+  const x = (e.clientX || (e.touches ? e.touches[0].clientX : 0)) - r.left;
+  const y = (e.clientY || (e.touches ? e.touches[0].clientY : 0)) - r.top;
+  
+  ctx.lineTo(x, y);
+  ctx.strokeStyle = currentColor;     // Aplica a cor selecionada
+  ctx.lineWidth = currentLineWidth;   // Aplica a espessura selecionada
+  ctx.lineCap = 'round';
+  ctx.stroke();
+}
+
+    canvas.onmousedown = start;
+    canvas.onmousemove = move;
+    window.onmouseup = () => { isDrawing = false; };
+    canvas.ontouchstart = start;
+    canvas.ontouchmove = move;
+    canvas.ontouchend = () => { isDrawing = false; };
+  }
+
+  // Funções para os botões da barra de ferramentas
+  function setSitacColor(color) { currentColor = color; }
+  function setSitacWidth(width) { currentLineWidth = width; }
+  function clearSitac() {
+    const activeId = localStorage.getItem('active_form_id');
+    const cv = document.getElementById(activeId + '-sitac');
+    if(cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+  };
+
 
 </script>
 </body>
