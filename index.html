@@ -5,92 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SGO – Guias de Comando</title>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-<script>
-let isDrawing = false;
-let currentColor = '#ff0000';
-let currentLineWidth = 3;
-
-function openSheet(type) {
-  document.getElementById('home').classList.remove('active');
-  document.getElementById('editor').classList.add('active');
-  document.getElementById('navBtns').style.display = 'flex';
-  document.querySelectorAll('.sgo-sheet').forEach(s => s.classList.remove('vis'));
-  const target = document.getElementById('form-' + type);
-  if (target) target.classList.add('vis');
-  localStorage.setItem('active_form_id', type);
-  setTimeout(() => initSITAC(type + '-sitac'), 100);
-}
-
-function initSITAC(canvasId) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = Math.max(1, Math.round(rect.width));
-  canvas.height = Math.max(1, Math.round(rect.height));
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const getPos = (e) => {
-    const r = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    return { x: clientX - r.left, y: clientY - r.top };
-  };
-
-  const start = (e) => {
-    isDrawing = true;
-    const pos = getPos(e);
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
-  };
-
-  const move = (e) => {
-    if (!isDrawing) return;
-    if (e.cancelable) e.preventDefault();
-    const pos = getPos(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.strokeStyle = currentColor;
-    ctx.lineWidth = currentLineWidth;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-  };
-
-  const stop = () => { isDrawing = false; ctx.closePath(); };
-
-  canvas.onmousedown = start;
-  canvas.onmousemove = move;
-  window.onmouseup = stop;
-  canvas.ontouchstart = start;
-  canvas.ontouchmove = move;
-  canvas.ontouchend = stop;
-}
-
-function setSitacColor(color, btn) {
-  currentColor = color;
-  if (btn) {
-    const parent = btn.parentElement;
-    parent.querySelectorAll('.cdot').forEach(d => d.classList.remove('sact'));
-    btn.classList.add('sact');
-  }
-}
-
-function setSitacWidth(width, btn) {
-  currentLineWidth = Number(width) || 3;
-  if (btn) {
-    const parent = btn.parentElement;
-    parent.querySelectorAll('button').forEach(b => b.classList.remove('sact'));
-    btn.classList.add('sact');
-  }
-}
-
-function clearCanvas(id) {
-  const cv = document.getElementById(id);
-  if (!cv) return;
-  cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
-}
-</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"Arial Narrow",Arial,sans-serif;font-size:11px;background:#b0b0b0;color:#000}
@@ -157,12 +71,24 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 /* INNER ROW LABEL */
 .rlbl{display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px;text-align:center;padding:2px 4px;line-height:1.2;border-right:0.5px solid #555}
 
-/* CHECKBOXES */
-.cbox{display:inline-flex;align-items:center;gap:3px;border:1px solid #666;padding:2px 5px 2px 3px;cursor:pointer;font-size:9.5px;font-weight:700;user-select:none;white-space:nowrap;margin:2px 1px;line-height:1.3;transition:background .12s,color .12s}
-.cbox::before{content:"";display:inline-flex;align-items:center;justify-content:center;width:11px;height:11px;min-width:11px;border:1.5px solid #666;background:#fff;flex-shrink:0;border-radius:1px;font-size:9px;font-weight:900;line-height:1;color:#000}
+/* ── CHECKBOXES with ✓ checkmark ── */
+.cbox{
+  display:inline-flex;align-items:center;gap:3px;
+  border:1px solid #666;padding:2px 5px 2px 3px;
+  cursor:pointer;font-size:9.5px;font-weight:700;
+  user-select:none;white-space:nowrap;margin:2px 1px;line-height:1.3;
+  transition:background .12s,color .12s
+}
+.cbox::before{
+  content:"";display:inline-flex;align-items:center;justify-content:center;
+  width:11px;height:11px;min-width:11px;border:1.5px solid #666;
+  background:#fff;flex-shrink:0;border-radius:1px;
+  font-size:9px;font-weight:900;line-height:1;color:#000
+}
 .cbox.on::before{content:"✓";background:#111;border-color:#111;color:#fff}
 .cbox.on{font-weight:900}
 
+/* Colour variants */
 .cx-r  {background:#ffebee} .cx-r.on  {background:#c62828;color:#fff} .cx-r.on::before{background:#fff;color:#c62828;border-color:#c62828}
 .cx-g  {background:#e8f5e9} .cx-g.on  {background:#1b5e20;color:#fff} .cx-g.on::before{background:#fff;color:#1b5e20;border-color:#1b5e20}
 .cx-b  {background:#e3f2fd} .cx-b.on  {background:#0d47a1;color:#fff} .cx-b.on::before{background:#fff;color:#0d47a1;border-color:#0d47a1}
@@ -172,22 +98,21 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 .cx-pk {background:#fce4ec} .cx-pk.on {background:#880e4f;color:#fff} .cx-pk.on::before{background:#fff;color:#880e4f;border-color:#880e4f}
 .cx-t  {background:#e0f2f1} .cx-t.on  {background:#006064;color:#fff} .cx-t.on::before{background:#fff;color:#006064;border-color:#006064}
 
+/* CHECKBOX ROW */
 .cbrow{display:flex;flex-wrap:wrap;align-items:center;padding:2px 3px;gap:0}
 
-/* BOTTOM ROWS */
+/* BOTTOM */
 .row-assumo{background:#fdd835;padding:3px 7px;font-weight:900;display:flex;align-items:center;gap:8px;border-top:0.5px solid #777}
 .row-prossigo{background:#fdd835;padding:4px 7px;font-weight:900;text-align:center;font-size:11px;letter-spacing:.5px;border-top:0.5px solid #777}
-.row-transito{background:#fff;padding:3px 7px;font-weight:900;display:flex;align-items:center;gap:8px;border-top:0.5px solid #777}
-.row-transito input{flex:1;border:none;outline:none;font-family:inherit;font-size:11px}
 
 /* RIGHT PANEL */
 .sr{border-left:2px solid #000;display:flex;flex-direction:column}
 .rp-top{display:flex;min-height:200px;flex:1}
 .rp-inf{flex:1;display:flex;flex-direction:column;border-bottom:1px solid #000}
-.rp-inf textarea{flex:1;width:100%;border:none;outline:none;padding:8px;font-family:inherit;font-size:11px;resize:none;background:transparent;line-height:1.4}
 .rp-stc{flex:1;border-left:1px solid #000;border-bottom:1px solid #000;display:flex;flex-direction:column;min-width:0}
 .rp-hdr{background:#1a237e;color:#fff;font-weight:900;font-size:10px;padding:2px 6px}
-.rp-lines{display:none}
+.rp-line{border-bottom:0.5px solid #ccc;height:21px;display:block;width:100%}
+.rp-lines{flex:1;overflow:hidden}
 .rp-posit{border-bottom:1px solid #000}
 .prow{display:grid;grid-template-columns:62px 76px 1fr;border-bottom:0.5px solid #888;align-items:center;min-height:22px}
 .prow:last-child{border-bottom:none}
@@ -202,7 +127,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 .mt td input:focus{background:#fffde7}
 .rp-pass{border-top:1px solid #000;padding:3px 6px;font-size:9.5px;background:#e8e8e8;display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-weight:700}
 
-/* SITAC */
+/* ── SITAC CANVAS ── */
 .sitac-wrap{flex:1;display:flex;flex-direction:column;position:relative;min-height:80px}
 .sitac-toolbar{display:flex;gap:3px;padding:2px 4px;background:#f5f5f5;border-bottom:1px solid #ccc;align-items:center;flex-wrap:wrap}
 .sitac-toolbar button{border:1px solid #aaa;background:#fff;cursor:pointer;padding:2px 5px;font-size:9px;font-family:inherit;font-weight:700;border-radius:2px;line-height:1}
@@ -211,9 +136,6 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 .cdot{width:14px;height:14px;border:2px solid #888;border-radius:50%;cursor:pointer;display:inline-block;flex-shrink:0;vertical-align:middle}
 .cdot.sact{border:2.5px solid #000;box-shadow:0 0 0 1px #000}
 .sitac-canvas{display:block;width:100%;flex:1;cursor:crosshair;touch-action:none;background:#fff}
-
-/* SECÇÃO LABEL colorida (MA/SA) */
-.sec-hdr{font-weight:900;font-size:9px;padding:2px 6px;text-transform:uppercase;letter-spacing:.4px;border-top:0.5px solid #999}
 
 /* PRINT */
 @media print{
@@ -227,6 +149,41 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
   .sr{border-left:none;border-top:2px solid #000}
   .home-grid{grid-template-columns:1fr}
 }
+
+/* Campo Ponto de Transito */
+.row-transito {
+    background: #fff;
+    padding: 3px 7px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-top: 0.5px solid #777;
+}
+.row-transito input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 11px;
+}
+
+/* Informações como Textarea */
+.rp-inf { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.rp-inf textarea {
+    flex: 1;
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 11px;
+    resize: none;
+    background: transparent;
+    line-height: 1.4;
+}
+.rp-lines { display: none; }
+
 </style>
 </head>
 <body>
@@ -234,16 +191,16 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 <header class="no-print">
   <strong>⚠ SGO-CBSLeiria</strong>
   <div class="hnav" id="navBtns" style="display:none">
-      <button class="hbtn" onclick="goHome()">🏠 MENU</button>
-      <button class="hbtn hbtn-red" onclick="clearCurrentSheet()">🗑️ APAGAR TUDO</button>
-      <button class="hbtn" onclick="window.print()">🖨 Imprimir</button>
-      <button class="hbtn" onclick="exportJPG()">⬇ Exportar JPG</button>
-    </div>
+    <button class="hbtn" onclick="goHome()">☰ Menu</button>
+    <button class="hbtn" onclick="window.print()">🖨 Imprimir</button>
+    <button class="hbtn hbtn-red" onclick="exportJPG()">⬇ Exportar JPG</button>
+    <label class="hbtn" style="cursor:pointer">📷 Adicionar Foto<input type="file" id="camInput" accept="image/*" multiple capture="environment" style="display:none"></label>
+  </div>
 </header>
 
 <div class="wrap">
 
-<!-- ═══════════════ HOME ═══════════════ -->
+<!-- HOME -->
 <div id="home" class="screen active">
   <div style="text-align:center;padding:18px 0 12px;color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700">
     Autoridade Nacional de Emergência e Proteção Civil — Sistema de Gestão de Operações
@@ -253,21 +210,25 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
     <div class="mcard" style="border-bottom:5px solid #4e342e" onclick="openSheet('es')"><span class="mcard-icon">🏢</span>Incêndios Estruturais</div>
     <div class="mcard" style="border-bottom:5px solid #e65100" onclick="openSheet('ac')"><span class="mcard-icon">🚗</span>Acidentes Rodoviários</div>
     <div class="mcard" style="border-bottom:5px solid #1a237e" onclick="openSheet('nb')"><span class="mcard-icon">☣</span>Matérias Perigosas / NRBQ</div>
-    <div class="mcard" style="border-bottom:5px solid #bf360c" onclick="openSheet('sa')"><span class="mcard-icon">🧗</span>Salvamento Difícil Acesso</div>
-    <div class="mcard" style="border-bottom:5px solid #01579b" onclick="openSheet('ma')"><span class="mcard-icon">🚁</span>Meio Aéreo / Resgate</div>
   </div>
 </div>
 
-<!-- ═══════════════ EDITOR ═══════════════ -->
+<!-- EDITOR -->
 <div id="editor" class="screen">
-
+<div class="toolbar no-print">
+  <span class="tlbl">Ficha:</span>
+  <button class="hbtn" style="font-size:10px;padding:3px 8px" onclick="openSheet('fl')">🌲 Florestais</button>
+  <button class="hbtn" style="font-size:10px;padding:3px 8px" onclick="openSheet('es')">🏢 Estruturais</button>
+  <button class="hbtn" style="font-size:10px;padding:3px 8px" onclick="openSheet('ac')">🚗 Acidentes</button>
+  <button class="hbtn" style="font-size:10px;padding:3px 8px" onclick="openSheet('nb')">☣ NRBQ</button>
+</div>
 
 
 <!-- ═══════════════════════════════════════
-  FICHA 1 – FLORESTAIS
+  FICHA 1 – FLORESTAIS  (pág. 10)
 ══════════════════════════════════════ -->
 <div id="form-fl" class="sgo-sheet">
-  <div>
+  <div><!-- LEFT -->
     <div class="hdr-strip" style="background:#1b5e20;color:#fff">
       <div class="hdr-main">Sistema de Gestão de Operações</div>
       <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
@@ -275,6 +236,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
     </div>
     <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
     <table class="ft"><colgroup><col style="width:16px"><col></colgroup><tbody>
+
     <tr><td colspan="2" style="padding:0">
       <div class="grow g3 bar-yellow">
         <div class="gr-b fc"><span class="lbl">Hr Posit</span><input type="time"></div>
@@ -282,6 +244,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         <div class="fc"><span class="lbl">Canal Manobra</span><input type="text" class="save-data"></div>
       </div>
     </td></tr>
+
+    <!-- ESTOU: 3 rows -->
     <tr>
       <td rowspan="3" class="slbl sl-estou">ESTOU</td>
       <td><span class="lbl">Estou em</span><input type="text" class="save-data"></td>
@@ -296,6 +260,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
       <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Município</div>
       <div class="fc"><input type="text" class="save-data"></div>
     </div></td></tr>
+
+    <!-- VEJO: 9 rows — rowspan=9 -->
     <tr>
       <td rowspan="9" class="slbl sl-vejo">VEJO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -377,6 +343,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         <input class="fi-il" type="number" style="width:34px"><b style="font-size:9px">%HR</b>
       </div>
     </div></td></tr>
+
+    <!-- FAÇO: 1 row — aligned with col 1 of table -->
     <tr>
       <td class="slbl sl-faco">FAÇO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -389,6 +357,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         </div>
       </div></td>
     </tr>
+
+    <!-- PEÇO: 1 row -->
     <tr>
       <td class="slbl sl-peco">PEÇO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -401,15 +371,16 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         </div>
       </div></td>
     </tr>
+
     </tbody></table>
-    <div class="row-transito"><span>Ponto de Trânsito</span><input type="text" class="save-data" id="fl-transito"></div>
+    <div class="row-transito"><span>Ponto de Trânsito</span><input type="text" class="save-data" class="save-data" id="fl-transito"></div>
     <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" class="save-data" placeholder="; Categoria e Nome" style="flex:1"></div>
     <div class="row-prossigo">Prossigo com o reconhecimento!</div>
     <div id="fl-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
   </div>
-  <div class="sr">
+  <div class="sr"><!-- RIGHT -->
     <div class="rp-top">
-      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea class="save-data" id="fl-text-info" placeholder="Escreva aqui as informações..."></textarea></div>
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea class="save-data" class="save-data" id="fl-text-info" placeholder="Escreva aqui as informações..."></textarea></div>
       <div class="rp-stc">
         <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('fl-sitac')">✕ Limpar</span></div>
         <div class="sitac-wrap"><div class="sitac-toolbar" id="fl-stb"></div><canvas class="sitac-canvas" id="fl-sitac"></canvas></div>
@@ -429,10 +400,10 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 
 
 <!-- ═══════════════════════════════════════
-  FICHA 2 – ESTRUTURAIS
+  FICHA 2 – ESTRUTURAIS  (pág. 9)
 ══════════════════════════════════════ -->
 <div id="form-es" class="sgo-sheet">
-  <div>
+  <div><!-- LEFT -->
     <div class="hdr-strip" style="background:#4e342e;color:#fff">
       <div class="hdr-main">Sistema de Gestão de Operações</div>
       <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
@@ -440,6 +411,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
     </div>
     <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
     <table class="ft"><colgroup><col style="width:16px"><col></colgroup><tbody>
+
     <tr><td colspan="2" style="padding:0">
       <div class="grow g3 bar-yellow">
         <div class="gr-b fc"><span class="lbl">Hr Posit</span><input type="time"></div>
@@ -447,6 +419,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         <div class="fc"><span class="lbl">Canal Manobra</span><input type="text" class="save-data"></div>
       </div>
     </td></tr>
+
+    <!-- ESTOU: 3 rows -->
     <tr>
       <td rowspan="3" class="slbl sl-estou">ESTOU</td>
       <td><span class="lbl">Estou em</span><input type="text" class="save-data"></td>
@@ -461,6 +435,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
       <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Município</div>
       <div class="fc"><input type="text" class="save-data"></div>
     </div></td></tr>
+
+    <!-- VEJO: 7 rows — rowspan=7 -->
     <tr>
       <td rowspan="7" class="slbl sl-vejo">VEJO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -523,6 +499,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         <span class="cbox cx-g" onclick="tog(this)">Outro <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:48px"></span>
       </div>
     </div></td></tr>
+
+    <!-- FAÇO: 1 row -->
     <tr>
       <td class="slbl sl-faco">FAÇO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -539,6 +517,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         </div>
       </div></td>
     </tr>
+
+    <!-- PEÇO: 1 row -->
     <tr>
       <td class="slbl sl-peco">PEÇO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -555,15 +535,16 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         </div>
       </div></td>
     </tr>
+
     </tbody></table>
-    <div class="row-transito"><span>Ponto de Trânsito</span><input type="text" class="save-data" id="es-transito"></div>
+    <div class="row-transito"><span>Ponto de Trânsito</span><input type="text" class="save-data" class="save-data" id="fl-transito"></div>
     <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" class="save-data" placeholder="; Categoria e Nome" style="flex:1"></div>
     <div class="row-prossigo">Prossigo com o reconhecimento!</div>
     <div id="es-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
   </div>
-  <div class="sr">
+  <div class="sr"><!-- RIGHT -->
     <div class="rp-top">
-      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea class="save-data" id="es-text-info" placeholder="Escreva aqui as informações..."></textarea></div>
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea class="save-data" class="save-data" id="es-text-info" placeholder="Escreva aqui as informações..."></textarea></div>
       <div class="rp-stc">
         <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('es-sitac')">✕ Limpar</span></div>
         <div class="sitac-wrap"><div class="sitac-toolbar" id="es-stb"></div><canvas class="sitac-canvas" id="es-sitac"></canvas></div>
@@ -583,10 +564,10 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 
 
 <!-- ═══════════════════════════════════════
-  FICHA 3 – ACIDENTES
+  FICHA 3 – ACIDENTES  (pág. 8)
 ══════════════════════════════════════ -->
 <div id="form-ac" class="sgo-sheet">
-  <div>
+  <div><!-- LEFT -->
     <div class="hdr-strip" style="background:#fdd835;color:#000;border-bottom:3px solid #e65100">
       <div class="hdr-main">Sistema de Gestão de Operações</div>
       <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
@@ -594,6 +575,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
     </div>
     <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
     <table class="ft"><colgroup><col style="width:16px"><col></colgroup><tbody>
+
     <tr><td colspan="2" style="padding:0">
       <div class="grow g3 bar-yellow">
         <div class="gr-b fc"><span class="lbl">Hr Posit</span><input type="time"></div>
@@ -601,6 +583,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         <div class="fc"><span class="lbl">Canal Manobra</span><input type="text" class="save-data"></div>
       </div>
     </td></tr>
+
+    <!-- ESTOU: 4 rows -->
     <tr>
       <td rowspan="4" class="slbl sl-estou">ESTOU</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:38px 1fr">
@@ -623,6 +607,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
       <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Município</div>
       <div class="fc"><input type="text" class="save-data"></div>
     </div></td></tr>
+
+    <!-- VEJO: 6 rows — rowspan=6 -->
     <tr>
       <td rowspan="6" class="slbl sl-vejo">VEJO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -679,6 +665,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         <input class="fi-il" type="number" style="width:34px"><b style="font-size:9px">%HR</b>
       </div>
     </div></td></tr>
+
+    <!-- FAÇO: 1 row -->
     <tr>
       <td class="slbl sl-faco">FAÇO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -691,6 +679,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         </div>
       </div></td>
     </tr>
+
+    <!-- SOLICITO: 1 row -->
     <tr>
       <td class="slbl sl-solicito">SOLICITO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -703,15 +693,16 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         </div>
       </div></td>
     </tr>
+
     </tbody></table>
-    <div class="row-transito"><span>Ponto de Trânsito</span><input type="text" class="save-data" id="ac-transito"></div>
+    <div class="row-transito"><span>Ponto de Trânsito</span><input type="text" class="save-data" class="save-data" id="fl-transito"></div>
     <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" class="save-data" placeholder="; Categoria e Nome" style="flex:1"></div>
     <div class="row-prossigo">Prossigo com o reconhecimento!</div>
     <div id="ac-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
   </div>
-  <div class="sr">
+  <div class="sr"><!-- RIGHT -->
     <div class="rp-top">
-      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea class="save-data" id="ac-text-info" placeholder="Escreva aqui as informações..."></textarea></div>
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea class="save-data" class="save-data" id="ac-text-info" placeholder="Escreva aqui as informações..."></textarea></div>
       <div class="rp-stc">
         <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('ac-sitac')">✕ Limpar</span></div>
         <div class="sitac-wrap"><div class="sitac-toolbar" id="ac-stb"></div><canvas class="sitac-canvas" id="ac-sitac"></canvas></div>
@@ -731,10 +722,10 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 
 
 <!-- ═══════════════════════════════════════
-  FICHA 4 – NRBQ
+  FICHA 4 – NRBQ  (pág. 7)
 ══════════════════════════════════════ -->
 <div id="form-nb" class="sgo-sheet">
-  <div>
+  <div><!-- LEFT -->
     <div class="hdr-strip" style="background:#1a237e;color:#fff">
       <div class="hdr-main">Sistema de Gestão de Operações</div>
       <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
@@ -742,6 +733,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
     </div>
     <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento NRBQ</div>
     <table class="ft"><colgroup><col style="width:16px"><col></colgroup><tbody>
+
     <tr><td colspan="2" style="padding:0">
       <div class="grow g3 bar-yellow">
         <div class="gr-b fc"><span class="lbl">Hr Posit</span><input type="time"></div>
@@ -749,6 +741,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         <div class="fc"><span class="lbl">Canal Manobra</span><input type="text" class="save-data"></div>
       </div>
     </td></tr>
+
+    <!-- ESTOU: 4 rows — rowspan=4 -->
     <tr>
       <td rowspan="4" class="slbl sl-estou">ESTOU</td>
       <td style="padding:0"><div class="grow g2">
@@ -771,6 +765,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         <div class="fc"><span class="lbl">Tipo Vegetação</span><input type="text" class="save-data"></div>
       </div>
     </td></tr>
+
+    <!-- VEJO: 7 rows — rowspan=7 -->
     <tr>
       <td rowspan="7" class="slbl sl-vejo">VEJO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:100px 1fr">
@@ -867,6 +863,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         <b style="font-size:9px">Outros:</b><input class="fi-il" type="text" style="flex:1;min-width:50px">
       </div>
     </td></tr>
+
+    <!-- FAÇO: 1 row -->
     <tr>
       <td class="slbl sl-faco">FAÇO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -878,6 +876,8 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         </div>
       </div></td>
     </tr>
+
+    <!-- SOLICITO: 1 row -->
     <tr>
       <td class="slbl sl-solicito">SOLICITO</td>
       <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
@@ -890,15 +890,16 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
         </div>
       </div></td>
     </tr>
+
     </tbody></table>
-    <div class="row-transito"><span>Ponto de Trânsito</span><input type="text" class="save-data" id="nb-transito"></div>
+    <div class="row-transito"><span>Ponto de Trânsito</span><input type="text" class="save-data" class="save-data" id="fl-transito"></div>
     <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" class="save-data" placeholder="; Categoria e Nome" style="flex:1"></div>
     <div class="row-prossigo">Prossigo com o reconhecimento!</div>
     <div id="nb-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
   </div>
-  <div class="sr">
+  <div class="sr"><!-- RIGHT -->
     <div class="rp-top">
-      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea class="save-data" id="nb-text-info" placeholder="Escreva aqui as informações..."></textarea></div>
+      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea class="save-data" class="save-data" id="nb-text-info" placeholder="Escreva aqui as informações..."></textarea></div>
       <div class="rp-stc">
         <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('nb-sitac')">✕ Limpar</span></div>
         <div class="sitac-wrap"><div class="sitac-toolbar" id="nb-stb"></div><canvas class="sitac-canvas" id="nb-sitac"></canvas></div>
@@ -915,399 +916,35 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
   </div>
 </div>
 
-
-<!-- ═══════════════════════════════════════
-  FICHA 5 – SALVAMENTO DIFÍCIL ACESSO
-══════════════════════════════════════ -->
-<div id="form-sa" class="sgo-sheet">
-  <div>
-    <div class="hdr-strip" style="background:#bf360c;color:#fff">
-      <div class="hdr-main">Sistema de Gestão de Operações</div>
-      <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
-      <div class="hdr-type">Operações de Salvamento em Locais de Difícil Acesso</div>
-    </div>
-    <div class="bar-blue">Ponto de Situação Inicial / Reconhecimento</div>
-    <table class="ft"><colgroup><col style="width:16px"><col></colgroup><tbody>
-
-    <!-- Topo -->
-    <tr><td colspan="2" style="padding:0">
-      <div class="grow g3 bar-yellow">
-        <div class="gr-b fc"><span class="lbl">Hora POSIT</span><input type="time"></div>
-        <div class="gr-b fc"><span class="lbl">Nº Oc. SADO</span><input type="text" class="save-data"></div>
-        <div class="fc"><span class="lbl">Nº CODU</span><input type="text" class="save-data"></div>
-      </div>
-    </td></tr>
-    <tr><td colspan="2" style="padding:0">
-      <div class="grow g3">
-        <div class="gr-b fc"><span class="lbl">Canal SIRESP</span><input type="text" class="save-data"></div>
-        <div class="gr-b fc"><span class="lbl">Canal ROB</span><input type="text" class="save-data"></div>
-        <div class="fc"><span class="lbl">Freq. Aero (MHz)</span><input type="text" class="save-data" placeholder="___.___"></div>
-      </div>
-    </td></tr>
-
-    <!-- ESTOU: 6 rows -->
-    <tr>
-      <td rowspan="6" class="slbl sl-estou">ESTOU</td>
-      <td><span class="lbl">Estou em</span><input type="text" class="save-data"></td>
-    </tr>
-    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 72px 1fr">
-      <div class="gr-b fc"><span class="lbl">Coord N (SIRESP)</span><input type="text" class="save-data" placeholder="__º__'__''N"></div>
-      <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Freguesia</div>
-      <div class="fc"><input type="text" class="save-data"></div>
-    </div></td></tr>
-    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 72px 1fr">
-      <div class="gr-b fc"><span class="lbl">Coord W (SIRESP)</span><input type="text" class="save-data" placeholder="__º__'__''W"></div>
-      <div class="gr-b" style="background:#fdd835;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px">Concelho</div>
-      <div class="fc"><input type="text" class="save-data"></div>
-    </div></td></tr>
-    <!-- Localização row 1 -->
-    <tr><td style="padding:0">
-      <div style="background:#ffe0b2;font-weight:900;font-size:8.5px;padding:2px 5px;border-bottom:0.5px solid #aaa;letter-spacing:.3px">LOCALIZAÇÃO — Características do Local</div>
-      <div class="cbrow">
-        <span class="cbox cx-o" onclick="tog(this)">No sopé da montanha</span>
-        <span class="cbox cx-o" onclick="tog(this)">A meio de escarpa / parede</span>
-        <span class="cbox cx-o" onclick="tog(this)">No topo da escarpa / parede</span>
-        <span class="cbox cx-o" onclick="tog(this)">Leito de rio</span>
-        <span class="cbox cx-o" onclick="tog(this)">Em local acessível</span>
-      </div>
-    </td></tr>
-    <!-- Localização row 2 -->
-    <tr><td style="padding:0">
-      <div class="cbrow">
-        <span class="cbox cx-o" onclick="tog(this)">Praia sem acesso</span>
-        <span class="cbox cx-o" onclick="tog(this)">Mar</span>
-        <span class="cbox cx-o" onclick="tog(this)">Zona rochosa</span>
-        <span class="cbox cx-o" onclick="tog(this)">Em local inacessível</span>
-        <span class="cbox cx-o" onclick="tog(this)">Outro <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:50px"></span>
-      </div>
-    </td></tr>
-    <!-- Tempo decorrido -->
-    <tr><td style="padding:0">
-      <div style="display:flex;align-items:center;gap:5px;padding:3px 6px;background:#fff8e1">
-        <span style="font-size:8.5px;font-weight:900;white-space:nowrap">Tempo estacionamento → vítima:</span>
-        <input class="fi-il" type="number" style="width:32px"> <b style="font-size:9px">h</b>
-        <input class="fi-il" type="number" style="width:32px"> <b style="font-size:9px">min</b>
-      </div>
-    </td></tr>
-
-    <!-- VEJO: 2 rows -->
-    <tr>
-      <td rowspan="2" class="slbl sl-vejo">VEJO</td>
-      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
-        <div class="rlbl" style="background:#ffcdd2">Vítimas:</div>
-        <div class="fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:3px">
-          <span style="font-size:9.5px;font-weight:700">Ilesos <input class="fi-il" type="number" style="width:28px"></span>
-          <span style="font-size:9.5px;font-weight:700">Mortos <input class="fi-il" type="number" style="width:28px"></span>
-          <span style="font-size:9.5px;font-weight:700">F. Leves <input class="fi-il" type="number" style="width:28px"></span>
-          <span style="font-size:9.5px;font-weight:700">F. Graves <input class="fi-il" type="number" style="width:28px"></span>
-          <span style="font-size:9.5px;font-weight:700">Desaparec. <input class="fi-il" type="number" style="width:28px"></span>
-          <span class="cbox cx-r" onclick="tog(this)">⚠ Multivítimas</span>
-        </div>
-      </div></td>
-    </tr>
-    <tr><td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
-      <div class="rlbl">Cond. Meteo:</div>
-      <div class="fc" style="display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding:3px">
-        <span class="cbox" onclick="tog(this)">Boa Visib.</span>
-        <span class="cbox cx-b" onclick="tog(this)">Má Visib.</span>
-        <span class="cbox cx-b" onclick="tog(this)">Chuva</span>
-        <span class="cbox cx-b" onclick="tog(this)">Neve</span>
-        <span class="cbox cx-b" onclick="tog(this)">Nevoeiro</span>
-        <b style="font-size:9px">Vento:</b>
-        <span class="cbox" onclick="tog(this)">Fraco</span>
-        <span class="cbox cx-y" onclick="tog(this)">Moderado</span>
-        <span class="cbox cx-r" onclick="tog(this)">Forte</span>
-        <b style="font-size:9px">Ar:</b><input class="fi-il" type="number" style="width:30px"><b style="font-size:9px">ºC</b>
-        <input class="fi-il" type="number" style="width:30px"><b style="font-size:9px">%HR</b>
-      </div>
-    </div></td></tr>
-
-    <!-- FAÇO: 1 row -->
-    <tr>
-      <td class="slbl sl-faco">FAÇO</td>
-      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
-        <div class="rlbl" style="background:#bbdefb">Faço:</div>
-        <div class="cbrow">
-          <span class="cbox cx-b" onclick="tog(this)">Avaliação de vítimas</span>
-          <span class="cbox cx-b" onclick="tog(this)">Montagem Eq. Resgate</span>
-          <span class="cbox cx-b" onclick="tog(this)">Cuidados Pré Hospitalares</span>
-          <span class="cbox cx-b" onclick="tog(this)">Criação de acessos à vítima</span>
-          <span class="cbox cx-b" onclick="tog(this)">Imobilização de vítima</span>
-          <span class="cbox cx-b" onclick="tog(this)">Descida / Ascensão</span>
-          <span class="cbox cx-b" onclick="tog(this)">Entrega das vítimas</span>
-        </div>
-      </div></td>
-    </tr>
-
-    <!-- SOLICITO: 1 row -->
-    <tr>
-      <td class="slbl sl-solicito">SOLICITO</td>
-      <td style="padding:0"><div class="grow" style="grid-template-columns:62px 1fr">
-        <div class="rlbl" style="background:#c8e6c9;font-size:9px;line-height:1.3">Solicito:<br>(quant.)</div>
-        <div class="cbrow">
-          <span class="cbox cx-g" onclick="tog(this)">Equipa Resgate</span>
-          <span class="cbox cx-g" onclick="tog(this)">SMPC</span>
-          <span class="cbox cx-g" onclick="tog(this)">ABSC / ABSC 4x4</span>
-          <span class="cbox cx-g" onclick="tog(this)">Elemento de Comando</span>
-          <span class="cbox cx-g" onclick="tog(this)">Apoio Diferenciado ⚕</span>
-          <span class="cbox cx-g" onclick="tog(this)">Força de Segurança</span>
-          <span class="cbox cx-g" onclick="tog(this)">🚁 Helicóptero de Resgate</span>
-          <span class="cbox cx-g" onclick="tog(this)">Outro <input class="fi-il" type="text" onclick="event.stopPropagation()" style="width:55px"></span>
-        </div>
-      </div></td>
-    </tr>
-
-    </tbody></table>
-    <div class="row-transito"><span>Ponto de Trânsito</span><input type="text" class="save-data" id="sa-transito"></div>
-    <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" class="save-data" placeholder="; Categoria, Nome e Designação (indicativo)" style="flex:1"></div>
-    <div class="row-prossigo">Prossigo com o reconhecimento!</div>
-    <div id="sa-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
-  </div>
-  <div class="sr">
-    <div class="rp-top">
-      <div class="rp-inf"><div class="rp-hdr">Informações</div><textarea class="save-data" id="sa-text-info" placeholder="Escreva aqui as informações..."></textarea></div>
-      <div class="rp-stc">
-        <div class="rp-hdr">SITAC <span style="float:right;font-weight:400;font-size:9px;cursor:pointer" onclick="clearCanvas('sa-sitac')">✕ Limpar</span></div>
-        <div class="sitac-wrap"><div class="sitac-toolbar" id="sa-stb"></div><canvas class="sitac-canvas" id="sa-sitac"></canvas></div>
-      </div>
-    </div>
-    <div class="rp-posit"><div class="rp-hdr">PONTOS DE SITUAÇÃO</div>
-      <div class="prow"><span class="plbl">2º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" class="save-data" style="width:100%"></div></div>
-      <div class="prow"><span class="plbl">3º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" class="save-data" style="width:100%"></div></div>
-      <div class="prow"><span class="plbl">4º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" class="save-data" style="width:100%"></div></div>
-    </div>
-    <div class="rp-meios"><div class="rp-hdr">MEIOS</div>
-      <table class="mt"><thead><tr><th>Meio</th><th>Entidade</th><th>Hr TO</th><th>Missão</th></tr></thead><tbody id="sa-meios"></tbody></table>
-    </div>
-    <div class="rp-pass">Passagem de COS às <input class="fi-il" type="time" style="width:62px">, para <input class="fi-il" type="text" style="flex:1;min-width:55px"></div>
-  </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════
-  FICHA 6 – ACIONAMENTO MEIO AÉREO / RESGATE
-══════════════════════════════════════ -->
-<div id="form-ma" class="sgo-sheet">
-  <div><!-- LEFT -->
-    <div class="hdr-strip" style="background:#01579b;color:#fff">
-      <div class="hdr-main">Sistema de Gestão de Operações</div>
-      <div class="hdr-sub">Guia de Comando - CBSLeiria</div>
-      <div class="hdr-type">Acionamento de Meio Aéreo para Resgate</div>
-    </div>
-    <div class="bar-blue">Informação a fornecer ao Comando Sub Regional</div>
-
-    <!-- RECUPERAÇÃO DAS VÍTIMAS -->
-    <div class="sec-hdr" style="background:#b71c1c;color:#fff">Recuperação das vítimas (vertical à vítima)</div>
-    <table class="ft"><tbody>
-      <tr><td style="padding:0"><div class="grow g2">
-        <div class="gr-b fc"><span class="lbl">Coord N (SIRESP)</span><input type="text" class="save-data" placeholder="__º__'__''N"></div>
-        <div class="fc"><span class="lbl">Coord W (SIRESP)</span><input type="text" class="save-data" placeholder="__º__'__''W"></div>
-      </div></td></tr>
-      <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 80px">
-        <div class="gr-b fc"><span class="lbl">Identificação Local</span><input type="text" class="save-data"></div>
-        <div class="fc"><span class="lbl">Altitude (m)</span><input type="number" class="save-data" style="width:100%"></div>
-      </div></td></tr>
-      <tr><td style="padding:0">
-        <div style="display:flex;align-items:center;gap:3px;padding:2px 5px;flex-wrap:wrap">
-          <b style="font-size:8.5px;white-space:nowrap">Sinalizado com:</b>
-          <span class="cbox cx-y" onclick="tog(this)">Facho Luminoso</span>
-          <span class="cbox cx-y" onclick="tog(this)">Espelho</span>
-          <span class="cbox cx-y" onclick="tog(this)">Facho Fumo</span>
-        </div>
-      </td></tr>
-      <tr><td style="padding:0">
-        <div style="display:flex;align-items:center;gap:3px;padding:2px 5px;flex-wrap:wrap">
-          <b style="font-size:8.5px;white-space:nowrap">Obstáculos:</b>
-          <span class="cbox cx-r" onclick="tog(this)">Outros</span>
-          <input class="fi-il" type="text" style="width:55px" placeholder="Quais">
-          <span class="cbox cx-r" onclick="tog(this)">Pó</span>
-          <span class="cbox cx-r" onclick="tog(this)">Linhas Elétricas</span>
-        </div>
-      </td></tr>
-    </tbody></table>
-
-    <!-- ENTREGA DAS VÍTIMAS -->
-    <div class="sec-hdr" style="background:#1b5e20;color:#fff">Entrega das vítimas</div>
-    <table class="ft"><tbody>
-      <tr><td style="padding:0"><div class="grow g2">
-        <div class="gr-b fc"><span class="lbl">Coord N (SIRESP)</span><input type="text" class="save-data" placeholder="__º__'__''N"></div>
-        <div class="fc"><span class="lbl">Coord W (SIRESP)</span><input type="text" class="save-data" placeholder="__º__'__''W"></div>
-      </div></td></tr>
-      <tr><td style="padding:0"><div class="grow" style="grid-template-columns:1fr 80px">
-        <div class="gr-b fc"><span class="lbl">Identificação Local</span><input type="text" class="save-data"></div>
-        <div class="fc"><span class="lbl">Altitude (m)</span><input type="number" class="save-data" style="width:100%"></div>
-      </div></td></tr>
-      <tr><td style="padding:0">
-        <div style="display:flex;align-items:center;gap:3px;padding:2px 5px;flex-wrap:wrap">
-          <b style="font-size:8.5px;white-space:nowrap">Local Sinalizado com:</b>
-          <span class="cbox cx-g" onclick="tog(this)">Veículos</span>
-          <span class="cbox cx-g" onclick="tog(this)">Facho Luminoso/Fumo</span>
-        </div>
-      </td></tr>
-      <tr><td style="padding:0">
-        <div style="display:flex;align-items:center;gap:3px;padding:2px 5px;flex-wrap:wrap">
-          <b style="font-size:8.5px;white-space:nowrap">Obstáculos:</b>
-          <span class="cbox cx-r" onclick="tog(this)">Outros</span>
-          <input class="fi-il" type="text" style="width:55px" placeholder="Quais">
-          <span class="cbox cx-r" onclick="tog(this)">Pó</span>
-          <span class="cbox cx-r" onclick="tog(this)">Linhas Elétricas</span>
-        </div>
-      </td></tr>
-    </tbody></table>
-
-    <!-- ELEMENTOS A NECESSITAR RESGATE AÉREO -->
-    <div class="sec-hdr" style="background:#01579b;color:#fff">Elementos a necessitar Resgate Aéreo</div>
-    <div style="overflow-x:auto">
-    <table class="mt" style="font-size:8px">
-      <thead>
-        <tr>
-          <th style="min-width:68px;text-align:left;padding-left:3px">Dados</th>
-          <th>Vítima 1</th><th>Vítima 2</th><th>Vítima 3</th><th>Outros</th>
-          <th>Eq. Resgate</th><th>Eq. Resgate</th><th>Eq. Resgate</th>
-          <th style="background:#c8e6c9;color:#1b5e20;min-width:58px">Vestuário<br>Vítima</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="font-weight:700">Peso Aprox.</td>
-          <td><input class="fi-il" type="number" style="width:26px"> Kg</td>
-          <td><input class="fi-il" type="number" style="width:26px"> Kg</td>
-          <td><input class="fi-il" type="number" style="width:26px"> Kg</td>
-          <td><input class="fi-il" type="number" style="width:26px"> Kg</td>
-          <td><input class="fi-il" type="number" style="width:26px"> Kg</td>
-          <td><input class="fi-il" type="number" style="width:26px"> Kg</td>
-          <td><input class="fi-il" type="number" style="width:26px"> Kg</td>
-          <td rowspan="6" style="vertical-align:top;padding:2px">
-            <div style="font-size:7px;color:#666;font-weight:700;line-height:1.3;margin-bottom:2px">Fornecer apenas<br>em caso de<br>desaparecidos</div>
-            <textarea class="save-data" id="ma-vestuario" style="width:100%;height:52px;resize:none;border:1px solid #ccc;outline:none;font-size:8px;font-family:inherit;background:#fafafa;padding:2px;line-height:1.3"></textarea>
-          </td>
-        </tr>
-        <tr>
-          <td style="font-weight:700">Ferido Leve</td>
-          <td><span class="cbox" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td colspan="3"></td>
-        </tr>
-        <tr>
-          <td style="font-weight:700">Ferido Grave</td>
-          <td><span class="cbox cx-r" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox cx-r" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox cx-r" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox cx-r" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td colspan="3"></td>
-        </tr>
-        <tr>
-          <td style="font-weight:700">Morto</td>
-          <td><span class="cbox" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td colspan="3"></td>
-        </tr>
-        <tr>
-          <td style="font-weight:700">Imob. maca vácuo</td>
-          <td><span class="cbox cx-b" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox cx-b" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox cx-b" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox cx-b" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td colspan="3"></td>
-        </tr>
-        <tr>
-          <td style="font-weight:700">Imob. plano duro</td>
-          <td><span class="cbox cx-b" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox cx-b" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox cx-b" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td><span class="cbox cx-b" onclick="tog(this)" style="margin:1px;padding:1px 3px"></span></td>
-          <td colspan="3"></td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-
-    <!-- INFORMAÇÕES ADICIONAIS -->
-    <div class="sec-hdr" style="background:#37474f;color:#fff">Informações adicionais</div>
-    <textarea class="save-data" id="ma-info" placeholder="Escreva aqui informações adicionais..." style="width:100%;height:72px;resize:none;border:none;outline:none;padding:5px 7px;font-size:11px;font-family:inherit;background:transparent;border-bottom:0.5px solid #999;line-height:1.5"></textarea>
-
-    <div class="row-assumo"><span style="white-space:nowrap">Assumo COS</span><input type="text" class="save-data" placeholder="; Categoria, Nome e Designação (indicativo)" style="flex:1"></div>
-    <div id="ma-photos" style="display:none;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px;border-top:0.5px solid #000"></div>
-  </div>
-
-  <div class="sr"><!-- RIGHT: Diagrama + POSITs -->
-    <!-- Cabeçalho diagrama -->
-    <div class="rp-hdr" style="background:#c62828;font-size:10px;text-align:center;padding:3px 6px">⚠ APROXIMAÇÃO À AERONAVE ⚠</div>
-
-    <!-- SVG diagrama clock-face -->
-    <div style="display:flex;flex-direction:column;align-items:center;padding:6px 4px;flex:1">
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:200px">
-        <!-- PROIBIDO: 3→9 horário (metade inferior), large-arc=1 -->
-        <path d="M 100 100 L 170 100 A 70 70 0 1 1 30 100 Z" fill="#ffcdd2" stroke="#c62828" stroke-width="0.5"/>
-        <!-- ACEITÁVEL direita: 1→3 -->
-        <path d="M 100 100 L 135 39.4 A 70 70 0 0 1 170 100 Z" fill="#fff9c4" stroke="#f57f17" stroke-width="0.5"/>
-        <!-- ACEITÁVEL esquerda: 9→11 -->
-        <path d="M 100 100 L 30 100 A 70 70 0 0 1 65 39.4 Z" fill="#fff9c4" stroke="#f57f17" stroke-width="0.5"/>
-        <!-- PREFERENCIAL: 11→1 (topo) -->
-        <path d="M 100 100 L 65 39.4 A 70 70 0 0 1 135 39.4 Z" fill="#c8e6c9" stroke="#2e7d32" stroke-width="0.5"/>
-        <!-- Círculo exterior -->
-        <circle cx="100" cy="100" r="70" fill="none" stroke="#333" stroke-width="1.5"/>
-        <!-- Círculo central (helicóptero) -->
-        <circle cx="100" cy="100" r="16" fill="#1a237e" stroke="#fff" stroke-width="1.5"/>
-        <text x="100" y="96" text-anchor="middle" font-size="8" fill="#fff" font-weight="900" font-family="Arial">HEL</text>
-        <text x="100" y="106" text-anchor="middle" font-size="8" fill="#fff" font-weight="900" font-family="Arial">ICÓP</text>
-        <!-- Numeração (r≈55 do centro) -->
-        <text x="100" y="42"  text-anchor="middle" font-size="9.5" font-weight="900" fill="#1b5e20" font-family="Arial">12</text>
-        <text x="129" y="52"  text-anchor="middle" font-size="9.5" font-weight="900" fill="#333" font-family="Arial">1</text>
-        <text x="152" y="73"  text-anchor="middle" font-size="9.5" font-weight="900" fill="#333" font-family="Arial">2</text>
-        <text x="161" y="103" text-anchor="middle" font-size="9.5" font-weight="900" fill="#c62828" font-family="Arial">3</text>
-        <text x="152" y="132" text-anchor="middle" font-size="9.5" font-weight="900" fill="#c62828" font-family="Arial">4</text>
-        <text x="129" y="154" text-anchor="middle" font-size="9.5" font-weight="900" fill="#c62828" font-family="Arial">5</text>
-        <text x="100" y="163" text-anchor="middle" font-size="9.5" font-weight="900" fill="#c62828" font-family="Arial">6</text>
-        <text x="71"  y="154" text-anchor="middle" font-size="9.5" font-weight="900" fill="#c62828" font-family="Arial">7</text>
-        <text x="48"  y="132" text-anchor="middle" font-size="9.5" font-weight="900" fill="#c62828" font-family="Arial">8</text>
-        <text x="39"  y="103" text-anchor="middle" font-size="9.5" font-weight="900" fill="#c62828" font-family="Arial">9</text>
-        <text x="48"  y="73"  text-anchor="middle" font-size="9.5" font-weight="900" fill="#333" font-family="Arial">10</text>
-        <text x="71"  y="52"  text-anchor="middle" font-size="9.5" font-weight="900" fill="#333" font-family="Arial">11</text>
-        <!-- Etiquetas de zona -->
-        <text x="100" y="71"  text-anchor="middle" font-size="8" font-weight="900" fill="#1b5e20" font-family="Arial">PREFERENCIAL</text>
-        <text x="148" y="84"  text-anchor="middle" font-size="7" font-weight="900" fill="#e65100" font-family="Arial">ACEITÁVEL</text>
-        <text x="52"  y="84"  text-anchor="middle" font-size="7" font-weight="900" fill="#e65100" font-family="Arial">ACEITÁVEL</text>
-        <text x="100" y="148" text-anchor="middle" font-size="8" font-weight="900" fill="#c62828" font-family="Arial">PROIBIDO</text>
-      </svg>
-      <div style="font-size:7.5px;font-weight:900;color:#c62828;text-align:center;padding:3px 4px;line-height:1.5;border:1.5px solid #c62828;margin-top:4px;width:100%;max-width:200px">
-        GARANTIR QUE O PILOTO VÊ TODOS OS SEUS MOVIMENTOS<br>
-        APROXIMAÇÃO SEMPRE EM SILHUETA REDUZIDA
-      </div>
-    </div>
-
-    <!-- Pontos de Situação -->
-    <div class="rp-posit"><div class="rp-hdr">PONTOS DE SITUAÇÃO</div>
-      <div class="prow"><span class="plbl">2º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" class="save-data" style="width:100%"></div></div>
-      <div class="prow"><span class="plbl">3º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" class="save-data" style="width:100%"></div></div>
-      <div class="prow"><span class="plbl">4º POSIT</span><div class="ptime"><input class="fi-il" type="time" style="width:68px"></div><div class="ptxt"><input type="text" class="save-data" style="width:100%"></div></div>
-    </div>
-    <div class="rp-pass">Passagem de COS às <input class="fi-il" type="time" style="width:62px">, para <input class="fi-il" type="text" style="flex:1;min-width:55px"></div>
-  </div>
-</div>
-
 </div><!-- /editor -->
 </div><!-- /wrap -->
 
 <script>
-// ─── Init meios rows ───
+// ─── Init lines & meios ───
 function fillLines(id,n){const el=document.getElementById(id);if(!el)return;for(let i=0;i<n;i++){const d=document.createElement('div');d.className='rp-line';el.appendChild(d);}}
 function fillMeios(id,n){const el=document.getElementById(id);if(!el)return;for(let i=0;i<n;i++)el.innerHTML+=`<tr><td><input type="text" class="save-data"></td><td><input type="text" class="save-data"></td><td><input type="time"></td><td><input type="text" class="save-data"></td></tr>`;}
-['fl','es','ac','nb','sa','ma'].forEach(f=>{fillLines(f+'-info',12);fillMeios(f+'-meios',10);});
+['fl','es','ac','nb'].forEach(f=>{fillLines(f+'-info',12);fillMeios(f+'-meios',10);});
 
 // ─── Navigation ───
 let currentForm=null;
+function openSheet(type){
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('editor').classList.add('active');
+  document.getElementById('navBtns').style.display='flex';
+  ['fl','es','ac','nb'].forEach(f=>{const el=document.getElementById('form-'+f);if(el)el.classList.remove('vis');});
+  const t=document.getElementById('form-'+type);
+  if(t)t.classList.add('vis');
+  currentForm=type;
+  window.scrollTo(0,0);
+  setTimeout(()=>initCanvas(type+'-sitac'),80);
+}
 function goHome(){if(confirm('Voltar ao menu? Os dados serão perdidos.'))location.reload();}
 
 // ─── Checkboxes ───
 function tog(el){el.classList.toggle('on');}
 
-// ─── SITAC Canvas ───
-const CS={};
+// ─── SITAC Canvas Drawing ───
+const CS={};// canvas states
 const PALETTE=['#000000','#c62828','#1565c0','#2e7d32','#e65100','#fdd835','#ffffff'];
 const SZLBLS=['S','M','G'];
 const SZVALS=[2,4,9];
@@ -1315,33 +952,40 @@ const SZVALS=[2,4,9];
 function initCanvas(id){
   const cv=document.getElementById(id);
   if(!cv)return;
+  // Size canvas to actual pixel dimensions
   const w=cv.parentElement.clientWidth||200;
   const h=cv.parentElement.clientHeight||150;
   if(!CS[id]){
-    cv.width=w;cv.height=h;
+    cv.width=w; cv.height=h;
     const ctx=cv.getContext('2d');
     ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
     CS[id]={color:'#000000',size:2,drawing:false,lx:0,ly:0};
     buildSitacToolbar(id);
-    cv.addEventListener('mousedown',e=>{startD(e,id);});
-    cv.addEventListener('mousemove',e=>{moveD(e,id);});
-    cv.addEventListener('mouseup',()=>stopD(id));
+    cv.addEventListener('mousedown', e=>{startD(e,id);});
+    cv.addEventListener('mousemove', e=>{moveD(e,id);});
+    cv.addEventListener('mouseup',   ()=>stopD(id));
     cv.addEventListener('mouseleave',()=>stopD(id));
     cv.addEventListener('touchstart',e=>{e.preventDefault();startD(e.touches[0],id);},{passive:false});
-    cv.addEventListener('touchmove',e=>{e.preventDefault();moveD(e.touches[0],id);},{passive:false});
-    cv.addEventListener('touchend',()=>stopD(id));
+    cv.addEventListener('touchmove', e=>{e.preventDefault();moveD(e.touches[0],id);},{passive:false});
+    cv.addEventListener('touchend',  ()=>stopD(id));
   } else {
+    // already init, just resize if needed
     if(cv.width!==w||cv.height!==h){
-      const img=cv.toDataURL();cv.width=w;cv.height=h;
-      const ctx=cv.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+      const img=cv.toDataURL();
+      cv.width=w;cv.height=h;
+      const ctx=cv.getContext('2d');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
       const im=new Image();im.onload=()=>ctx.drawImage(im,0,0);im.src=img;
     }
   }
 }
+
 function buildSitacToolbar(cid){
   const tbId=cid.replace('sitac','stb');
   const tb=document.getElementById(tbId);
-  if(!tb||tb._built)return;tb._built=true;
+  if(!tb||tb._built)return;
+  tb._built=true;
+  // Colour dots
   PALETTE.forEach((c,i)=>{
     const d=document.createElement('span');
     d.className='cdot'+(i===0?' sact':'');
@@ -1349,26 +993,57 @@ function buildSitacToolbar(cid){
     if(c==='#ffffff')d.style.border='2px solid #999';
     if(c==='#fdd835')d.style.border='2px solid #999';
     d.title=c==='#ffffff'?'Apagador':c;
-    d.onclick=()=>{CS[cid].color=c;CS[cid].size=c==='#ffffff'?18:CS[cid].size;tb.querySelectorAll('.cdot').forEach(x=>x.classList.remove('sact'));d.classList.add('sact');};
+    d.onclick=()=>{
+      CS[cid].color=c;
+      CS[cid].size=c==='#ffffff'?18:CS[cid].size;
+      tb.querySelectorAll('.cdot').forEach(x=>x.classList.remove('sact'));
+      d.classList.add('sact');
+    };
     tb.appendChild(d);
   });
+  // Separator
   const sep=document.createElement('span');
   sep.style.cssText='display:inline-block;width:1px;height:13px;background:#ccc;margin:0 3px;vertical-align:middle';
   tb.appendChild(sep);
+  // Size buttons
   SZLBLS.forEach((lbl,i)=>{
-    const b=document.createElement('button');b.textContent=lbl;b.className=i===0?'sact':'';
-    b.onclick=()=>{CS[cid].size=SZVALS[i];tb.querySelectorAll('button').forEach(x=>x.classList.remove('sact'));b.classList.add('sact');};
+    const b=document.createElement('button');
+    b.textContent=lbl;
+    b.className=i===0?'sact':'';
+    b.onclick=()=>{
+      CS[cid].size=SZVALS[i];
+      tb.querySelectorAll('button').forEach(x=>x.classList.remove('sact'));
+      b.classList.add('sact');
+    };
     tb.appendChild(b);
   });
 }
-function getXY(e,cv){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*(cv.width/r.width),y:(e.clientY-r.top)*(cv.height/r.height)};}
-function startD(e,id){const cv=document.getElementById(id);const s=CS[id];s.drawing=true;const p=getXY(e,cv);s.lx=p.x;s.ly=p.y;}
-function moveD(e,id){const s=CS[id];if(!s||!s.drawing)return;const cv=document.getElementById(id);const ctx=cv.getContext('2d');const p=getXY(e,cv);ctx.beginPath();ctx.moveTo(s.lx,s.ly);ctx.lineTo(p.x,p.y);ctx.strokeStyle=s.color;ctx.lineWidth=s.size;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();s.lx=p.x;s.ly=p.y;}
+
+function getXY(e,cv){
+  const r=cv.getBoundingClientRect();
+  return{x:(e.clientX-r.left)*(cv.width/r.width),y:(e.clientY-r.top)*(cv.height/r.height)};
+}
+function startD(e,id){
+  const cv=document.getElementById(id);const s=CS[id];
+  s.drawing=true;const p=getXY(e,cv);s.lx=p.x;s.ly=p.y;
+}
+function moveD(e,id){
+  const s=CS[id];if(!s||!s.drawing)return;
+  const cv=document.getElementById(id);const ctx=cv.getContext('2d');
+  const p=getXY(e,cv);
+  ctx.beginPath();ctx.moveTo(s.lx,s.ly);ctx.lineTo(p.x,p.y);
+  ctx.strokeStyle=s.color;ctx.lineWidth=s.size;
+  ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+  s.lx=p.x;s.ly=p.y;
+}
 function stopD(id){if(CS[id])CS[id].drawing=false;}
-function clearCanvas(id){const cv=document.getElementById(id);if(!cv)return;const ctx=cv.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);}
+function clearCanvas(id){
+  const cv=document.getElementById(id);if(!cv)return;
+  const ctx=cv.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+}
 
 window.addEventListener('resize',()=>{
-  ['fl','es','ac','nb','sa'].forEach(f=>{
+  ['fl','es','ac','nb'].forEach(f=>{
     const el=document.getElementById('form-'+f);
     if(el&&el.classList.contains('vis'))setTimeout(()=>initCanvas(f+'-sitac'),50);
   });
@@ -1390,303 +1065,100 @@ document.getElementById('camInput').addEventListener('change',function(e){
 
 // ─── Export JPG ───
 async function exportJPG(){
-  const formId=currentForm||localStorage.getItem('activeformid');
-  if(!formId)return;
-  const ficha=document.getElementById('form-'+formId);
-  if(!ficha)return;
-  const names={fl:'Florestais',es:'Estruturais',ac:'Acidentes',nb:'NRBQ',sa:'DificilAcesso',ma:'MeioAereo'};
-  const prevDisplay=ficha.style.display;
-  const prevVis=ficha.classList.contains('vis');
-  document.querySelectorAll('.sgo-sheet').forEach(s=>{if(s!==ficha)s.style.display='none';});
-  ficha.classList.add('vis');
-  ficha.style.display='grid';
-  window.scrollTo(0,0);
-  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-  const canvas=await html2canvas(ficha,{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollX:0,scrollY:0});
+  if(!currentForm)return;
+  const ficha=document.getElementById('form-'+currentForm);
+  const names={fl:'Florestais',es:'Estruturais',ac:'Acidentes',nb:'NRBQ'};
+  const canvas=await html2canvas(ficha,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
   const a=document.createElement('a');
-  a.download='SGO-'+(names[formId]||formId)+'-'+new Date().toISOString().slice(0,10)+'.jpg';
+  a.download='SGO_'+(names[currentForm]||currentForm)+'_'+new Date().toISOString().slice(0,10)+'.jpg';
   a.href=canvas.toDataURL('image/jpeg',0.93);a.click();
-  ficha.style.display=prevDisplay||'grid';
-  if(!prevVis)ficha.classList.remove('vis');
-  document.querySelectorAll('.sgo-sheet').forEach(s=>{if(s!==ficha)s.style.display='';});
 }
-
-function goHome() {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('home').classList.add('active');
-  document.getElementById('navBtns').style.display = 'none';
-  window.scrollTo(0,0);
-}
-
-function clearCurrentSheet() {
-  if(!confirm("Deseja apagar todos os dados desta ficha?")) return;
-  const activeId = localStorage.getItem('active_form_id');
-  const container = document.getElementById('form-' + activeId);
-  if(container) {
-    // Clear standard inputs
-    container.querySelectorAll('input, textarea').forEach(el => {
-      if(el.type === 'checkbox') el.checked = false;
-      else el.value = '';
-    });
-    // Clear custom checkboxes (spans with class cbox)
-    container.querySelectorAll('.cbox').forEach(el => el.classList.remove('on'));
-    // Clear canvas if exists
-    const cv = document.getElementById(activeId + '-sitac');
-    if(cv) {
-      const ctx = cv.getContext('2d');
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      localStorage.removeItem('SGO_CANVAS_' + activeId + '-sitac');
-    }
-    saveData();
-  }
-}
-
-
 </script>
-
 <script>
-// ─── SISTEMA DE MEMÓRIA ───
-const STORAGE_KEY='SGO_DATA_STORE';
-const CANVAS_KEY='SGO_CANVAS_';
+// --- SISTEMA DE MEMÓRIA (V5) ---
+const STORAGE_KEY = 'SGO_DATA_STORE';
+const CANVAS_KEY = 'SGO_CANVAS_';
 
-function saveData(){
-  const data={};
-  document.querySelectorAll('.save-data,input[type="checkbox"],select').forEach(el=>{
-    const id=el.id;if(!id)return;
-    if(el.type==='checkbox')data[id]=el.checked;
-    else data[id]=el.value;
-  });
-  data['active_form_id']=currentForm;
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
-}
-
-function saveCanvas(id){
-  const cv=document.getElementById(id);
-  if(cv)localStorage.setItem(CANVAS_KEY+id,cv.toDataURL());
-}
-
-function loadAll(){
-  const saved=localStorage.getItem(STORAGE_KEY);
-  if(saved){
-    const data=JSON.parse(saved);
-    Object.keys(data).forEach(id=>{
-      const el=document.getElementById(id);if(!el)return;
-      if(el.type==='checkbox')el.checked=data[id];
-      else el.value=data[id];
+function saveData() {
+    const data = {};
+    // Salva todos os inputs e textareas com a classe save-data
+    document.querySelectorAll('.save-data, input[type="checkbox"], select').forEach(el => {
+        const id = el.id;
+        if (!id) return;
+        if (el.type === 'checkbox') data[id] = el.checked;
+        else data[id] = el.value;
     });
-    if(data['active_form_id'])openSheet(data['active_form_id']);
-  }
-  // Restaurar desenhos SITAC (apenas fichas com canvas)
-  ['fl','es','ac','nb','sa'].forEach(code=>{
-    const canvasId=code+'-sitac';
-    const dataURL=localStorage.getItem(CANVAS_KEY+canvasId);
-    if(dataURL){
-      const cv=document.getElementById(canvasId);if(!cv)return;
-      const ctx=cv.getContext('2d');
-      const img=new Image();img.onload=()=>ctx.drawImage(img,0,0);img.src=dataURL;
+    // Salva qual a ficha que está aberta atualmente
+    data['active_form_id'] = currentForm;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function saveCanvas(id) {
+    const cv = document.getElementById(id);
+    if (cv) {
+        localStorage.setItem(CANVAS_KEY + id, cv.toDataURL());
     }
-  });
 }
 
-document.addEventListener('input',saveData);
-document.addEventListener('change',saveData);
-
-function patchCanvas(){
-  ['fl-sitac','es-sitac','ac-sitac','nb-sitac','sa-sitac'].forEach(id=>{
-    const cv=document.getElementById(id);
-    if(cv)['mouseup','touchend','mouseleave'].forEach(ev=>cv.addEventListener(ev,()=>saveCanvas(id)));
-  });
-}
-
-window.clearEverything=function(){
-  if(confirm('Deseja apagar TODOS os dados e desenhos desta ficha?')){localStorage.clear();location.reload();}
-};
-
-window.addEventListener('load',()=>{patchCanvas();loadAll();});
-
-function goHome() {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('home').classList.add('active');
-  document.getElementById('navBtns').style.display = 'none';
-  window.scrollTo(0,0);
-}
-
-function clearCurrentSheet() {
-  if(!confirm("Deseja apagar todos os dados desta ficha?")) return;
-  const activeId = localStorage.getItem('active_form_id');
-  const container = document.getElementById('form-' + activeId);
-  if(container) {
-    // Clear standard inputs
-    container.querySelectorAll('input, textarea').forEach(el => {
-      if(el.type === 'checkbox') el.checked = false;
-      else el.value = '';
+function loadAll() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        const data = JSON.parse(saved);
+        // Restaurar campos
+        Object.keys(data).forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.type === 'checkbox') el.checked = data[id];
+            else el.value = data[id];
+        });
+        
+        // Abrir a ficha que estava aberta
+        if (data['active_form_id']) {
+            showForm(data['active_form_id']);
+        }
+    }
+    
+    // Restaurar desenhos do SITAC
+    ['fl','es','ac','nb'].forEach(code => {
+        const canvasId = code + '-sitac';
+        const dataURL = localStorage.getItem(CANVAS_KEY + canvasId);
+        if (dataURL) {
+            const cv = document.getElementById(canvasId);
+            const ctx = cv.getContext('2d');
+            const img = new Image();
+            img.onload = () => ctx.drawImage(img, 0, 0);
+            img.src = dataURL;
+        }
     });
-    // Clear custom checkboxes (spans with class cbox)
-    container.querySelectorAll('.cbox').forEach(el => el.classList.remove('on'));
-    // Clear canvas if exists
-    const cv = document.getElementById(activeId + '-sitac');
-    if(cv) {
-      const ctx = cv.getContext('2d');
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      localStorage.removeItem('SGO_CANVAS_' + activeId + '-sitac');
+}
+
+// Ouvintes para salvar automaticamente
+document.addEventListener('input', saveData);
+document.addEventListener('change', saveData);
+
+// Adicionar salvamento ao terminar de desenhar no canvas
+function patchCanvas() {
+    ['fl-sitac','es-sitac','ac-sitac','nb-sitac'].forEach(id => {
+        const cv = document.getElementById(id);
+        if (cv) {
+            const endEvents = ['mouseup', 'touchend', 'mouseleave'];
+            endEvents.forEach(ev => cv.addEventListener(ev, () => saveCanvas(id)));
+        }
+    });
+}
+
+// Modificar função de limpar
+window.clearEverything = function() {
+    if (confirm("Deseja apagar TODOS os dados e desenhos desta ficha?")) {
+        localStorage.clear();
+        location.reload();
     }
-    saveData();
-  }
 }
 
-
-function initSITAC(canvasId) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  // Ajusta o tamanho real do canvas ao tamanho visível no ecrã
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
-
-  const start = (e) => {
-    const r = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches ? e.touches[0].clientX : 0)) - r.left;
-    const y = (e.clientY || (e.touches ? e.touches[0].clientY : 0)) - r.top;
-    isDrawing = true;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  };
-
-  const move = (e) => {
-    if (!isDrawing) return;
-    const r = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches ? e.touches[0].clientX : 0)) - r.left;
-    const y = (e.clientY || (e.touches ? e.touches[0].clientY : 0)) - r.top;
-    
-    ctx.lineTo(x, y);
-    ctx.strokeStyle = currentColor;     // Aplica a cor selecionada
-    ctx.lineWidth = currentLineWidth;   // Aplica a espessura selecionada
-    ctx.lineCap = 'round';
-    ctx.stroke();
-  };
-
-  // Eventos de Rato e Touch
-  canvas.onmousedown = start;
-  canvas.onmousemove = move;
-  window.onmouseup = () => { isDrawing = false; };
-  canvas.ontouchstart = start;
-  canvas.ontouchmove = move;
-  canvas.ontouchend = () => { isDrawing = false; };
-}
-
-function startDrawing(e, canvas, ctx) {
-  isDrawing = true;
-  const rect = canvas.getBoundingClientRect();
-  ctx.beginPath();
-  ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-  ctx.strokeStyle = currentColor;
-  ctx.lineWidth = 3;
-  ctx.lineCap = 'round';
-}
-
-function draw(e, canvas, ctx) {
-  if (!isDrawing) return;
-  const rect = canvas.getBoundingClientRect();
-  ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-  ctx.stroke();
-}
-
-function stopDrawing() { isDrawing = false; }
-function setSitacColor(color) { 
-  currentColor = color; 
-}
-
-function setSitacWidth(width) { 
-  currentLineWidth = width; 
-}
-function openSheet(id) {
-  // 1. Alterna as janelas (Ecrã Inicial vs Editor)
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('editor').classList.add('active');
-  
-  // 2. Mostra apenas a ficha que foi clicada
-  document.querySelectorAll('.sgo-sheet').forEach(s => s.classList.remove('vis'));
-  const target = document.getElementById('form-' + id);
-  if(target) target.classList.add('vis');
-  
-  // 3. Ativa a barra de botões superior e guarda o ID
-  document.getElementById('navBtns').style.display = 'flex';
-  localStorage.setItem('active_form_id', id);
-  window.scrollTo(0,0);
-
-  // 4. LIGA O SITAC (O comando que faltava)
-  // Damos 200ms para a ficha aparecer antes de ativar o desenho
-  setTimeout(() => {
-    initSitac(); 
-  }, 200);
-setTimeout(() => { initSITAC(type + '-sitac'); }, 100);
-}
-
-// --- FUNÇÃO EXPORTAR ---
-function exportJPG() {
-  const activeId = localStorage.getItem('active_form_id');
-  const element = document.getElementById('form-' + activeId);
-  if(!element) return;
-  
-  html2canvas(element, { scale: 2 }).then(canvas => {
-    const link = document.createElement('a');
-    link.download = `SGO_${activeId}.jpg`;
-    link.href = canvas.toDataURL("image/jpeg", 0.9);
-    link.click();
-  });
-}
-
-function initSitac() {
-    const activeId = localStorage.getItem('active_form_id');
-    const canvas = document.getElementById(activeId + '-sitac');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    
-    // Ajusta o tamanho real ao tamanho visível
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-
-    const start = (e) => {
-      const r = canvas.getBoundingClientRect();
-      const x = (e.clientX || e.touches[0].clientX) - r.left;
-      const y = (e.clientY || e.touches[0].clientY) - r.top;
-      isDrawing = true;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    }
-
-   const move = (e) => {
-  if (!isDrawing) return;
-  const r = canvas.getBoundingClientRect();
-  const x = (e.clientX || (e.touches ? e.touches[0].clientX : 0)) - r.left;
-  const y = (e.clientY || (e.touches ? e.touches[0].clientY : 0)) - r.top;
-  
-  ctx.lineTo(x, y);
-  ctx.strokeStyle = currentColor;     // Aplica a cor selecionada
-  ctx.lineWidth = currentLineWidth;   // Aplica a espessura selecionada
-  ctx.lineCap = 'round';
-  ctx.stroke();
-}
-
-    canvas.onmousedown = start;
-    canvas.onmousemove = move;
-    window.onmouseup = () => { isDrawing = false; };
-    canvas.ontouchstart = start;
-    canvas.ontouchmove = move;
-    canvas.ontouchend = () => { isDrawing = false; };
-  }
-
-  // Funções para os botões da barra de ferramentas
-  function setSitacColor(color) { currentColor = color; }
-  function setSitacWidth(width) { currentLineWidth = width; }
-  function clearSitac() {
-    const activeId = localStorage.getItem('active_form_id');
-    const cv = document.getElementById(activeId + '-sitac');
-    if(cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
-  };
-
-
-</script>
-</body>
+// Inicializar
+window.addEventListener('load', () => {
+    patchCanvas();
+    loadAll();
+});
+</script></body>
 </html>
