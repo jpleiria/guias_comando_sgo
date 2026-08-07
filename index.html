@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1c1c1c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SGO Guias">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
 <title>SGO – Guias de Comando</title>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
@@ -15,9 +23,15 @@ header strong{font-size:13px;letter-spacing:1px;text-transform:uppercase}
 .hbtn:hover{background:#333}
 .hbtn-red{background:#c62828;border-color:#c62828}
 .hnav{display:flex;gap:6px;flex-wrap:wrap}
+#installBtn{display:none}
 
 .wrap{max-width:1140px;margin:14px auto;padding:0 10px}
 .screen{display:none}.screen.active{display:block}
+.app-footer{max-width:1140px;margin:18px auto 10px;padding:0 10px;color:#e5e5e5;text-align:center;font-size:9px;line-height:1.45;letter-spacing:.25px;opacity:.8}
+.print-export-header,.print-export-footer{display:none}
+.export-capture{background:#fff;width:1140px;padding:0;color:#000}
+.export-capture-header{background:#1c1c1c;color:#fff;padding:10px 14px;text-align:center;font-size:11px;line-height:1.45;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.export-capture-footer{padding:8px 12px;text-align:center;font-size:9px;line-height:1.4;color:#555;border-top:1px solid #bbb}
 
 /* HOME */
 .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:620px;margin:0 auto}
@@ -140,6 +154,7 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 /* PRINT */
 @media print{
   .no-print{display:none!important}
+  .print-export-header,.print-export-footer{display:none!important}
   body{background:#fff}
   .sgo-sheet{page-break-after:always;border:1pt solid #000}
   @page{margin:6mm;size:A4 landscape}
@@ -194,8 +209,9 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 <header class="no-print">
   <strong>⚠ SGO-CBSLeiria</strong>
   <div class="hnav" id="navBtns" style="display:none">
+    <button class="hbtn" id="installBtn" type="button">Instalar app</button>
     <button class="hbtn" onclick="goHome()">☰ Menu</button>
-    <button class="hbtn" onclick="window.print()">🖨 Imprimir</button>
+    <button class="hbtn" onclick="printPDF()">🖨 Imprimir / PDF</button>
     <button class="hbtn hbtn-red" onclick="exportJPG()">⬇ Exportar JPG</button>
     <label class="hbtn" style="cursor:pointer">📷 Adicionar Foto<input type="file" id="camInput" accept="image/*" multiple capture="environment" style="display:none"></label>
   </div>
@@ -206,8 +222,10 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 <!-- HOME -->
 <div id="home" class="screen active">
   <div style="text-align:center;padding:18px 0 12px;color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700">
-    Autoridade Nacional de Emergência e Proteção Civil — Sistema de Gestão de Operações
+    Autoridade Nacional de Emergência e Proteção Civil — Sistema de Gestão de Operações<br>
+    Companhia Bombeiros Sapadores Leiria
   </div>
+  <div style="text-align:center;margin:-4px 0 12px"><button class="hbtn" id="installHomeBtn" type="button" style="display:none;background:#1a237e;border-color:#1a237e">Instalar app no Android</button></div>
   <div class="home-grid">
     <div class="mcard" style="border-bottom:5px solid #1b5e20" onclick="openSheet('fl')"><span class="mcard-icon">🌲</span>Incêndios Florestais</div>
     <div class="mcard" style="border-bottom:5px solid #4e342e" onclick="openSheet('es')"><span class="mcard-icon">🏢</span>Incêndios Estruturais</div>
@@ -220,6 +238,10 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
 
 <!-- EDITOR -->
 <div id="editor" class="screen">
+<div class="print-export-header">
+  <div>Autoridade Nacional de Emergência e Proteção Civil — Sistema de Gestão de Operações</div>
+  <div>Companhia Bombeiros Sapadores Leiria</div>
+</div>
 <div class="toolbar no-print">
   <span class="tlbl">Ficha:</span>
   <button class="hbtn" style="font-size:10px;padding:3px 8px" onclick="openSheet('fl')">🌲 Florestais</button>
@@ -1305,8 +1327,19 @@ input[type=text]:focus,input[type=time]:focus,input[type=number]:focus,textarea:
   </div>
 </div>
 
+<div class="print-export-footer">
+  <div>SChefe 2ª - João Paulo Pereira</div>
+  <div>CBSLeiria</div>
+  <div>= ver. 2.1 - 2026 =</div>
+</div>
 </div><!-- /editor -->
 </div><!-- /wrap -->
+
+<footer class="app-footer no-print">
+  <div>SChefe 2ª - João Paulo Pereira</div>
+  <div>CBSLeiria</div>
+  <div>= ver. 2.1 - 2026 =</div>
+</footer>
 
 <script>
 // ─── Init lines & meios ───
@@ -1390,6 +1423,20 @@ function buildSitacToolbar(cid){
     };
     tb.appendChild(d);
   });
+  // Borracha visível: desenha a branco apenas sobre a área pretendida.
+  const eraser=document.createElement('button');
+  eraser.textContent='Borracha';
+  eraser.title='Apagar apenas uma parte do desenho';
+  eraser.onclick=()=>{
+    CS[cid].color='#ffffff';
+    CS[cid].size=18;
+    tb.querySelectorAll('.cdot').forEach(x=>x.classList.remove('sact'));
+    const whiteDot=Array.from(tb.querySelectorAll('.cdot')).find(x=>x.style.background==='white' || x.style.background==='rgb(255, 255, 255)');
+    if(whiteDot)whiteDot.classList.add('sact');
+    tb.querySelectorAll('button').forEach(x=>x.classList.remove('sact'));
+    eraser.classList.add('sact');
+  };
+  tb.appendChild(eraser);
   // Separator
   const sep=document.createElement('span');
   sep.style.cssText='display:inline-block;width:1px;height:13px;background:#ccc;margin:0 3px;vertical-align:middle';
@@ -1453,14 +1500,69 @@ document.getElementById('camInput').addEventListener('change',function(e){
 });
 
 // ─── Export JPG ───
+function createExportCapture(ficha){
+  const frame=document.createElement('div');
+  frame.className='export-capture';
+  frame.style.cssText='position:fixed;left:-20000px;top:0;width:'+ficha.offsetWidth+'px;z-index:-1';
+  frame.innerHTML='<div class="export-capture-header">Autoridade Nacional de Emergência e Proteção Civil — Sistema de Gestão de Operações<br>Companhia Bombeiros Sapadores Leiria</div>';
+  const clone=ficha.cloneNode(true);
+  clone.classList.add('vis');
+  // Um clone de canvas não inclui o desenho; copiamos cada SITAC para a exportação.
+  ficha.querySelectorAll('canvas').forEach((source,index)=>{
+    const target=clone.querySelectorAll('canvas')[index];
+    if(target){
+      target.width=source.width;target.height=source.height;
+      target.getContext('2d').drawImage(source,0,0);
+    }
+  });
+  frame.appendChild(clone);
+  frame.insertAdjacentHTML('beforeend','<div class="export-capture-footer">SChefe 2ª - João Paulo Pereira<br>CBSLeiria<br>= ver. 2.1 - 2026 =</div>');
+  document.body.appendChild(frame);
+  return frame;
+}
+
 async function exportJPG(){
   if(!currentForm)return;
   const ficha=document.getElementById('form-'+currentForm);
   const names={fl:'Florestais',es:'Estruturais',ac:'Acidentes',nb:'NRBQ',sa:'DificilAcesso',ma:'MeioAereo'};
-  const canvas=await html2canvas(ficha,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+  const frame=createExportCapture(ficha);
+  const canvas=await html2canvas(frame,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+  frame.remove();
   const a=document.createElement('a');
   a.download='SGO_'+(names[currentForm]||currentForm)+'_'+new Date().toISOString().slice(0,10)+'.jpg';
   a.href=canvas.toDataURL('image/jpeg',0.93);a.click();
+}
+
+async function printPDF(){
+  if(!currentForm)return;
+  // A janela é aberta logo no clique, evitando que o bloqueador de pop-ups a impeça.
+  const printWindow=window.open('', 'sgo-pdf', 'width=1280,height=900');
+  if(!printWindow){
+    alert('Permita a abertura da janela de impressão para criar o PDF.');
+    return;
+  }
+  printWindow.document.write('<title>A preparar PDF...</title><p style="font-family:Arial;text-align:center;padding:40px">A preparar PDF...</p>');
+  const ficha=document.getElementById('form-'+currentForm);
+  const frame=createExportCapture(ficha);
+  try{
+    const canvas=await html2canvas(frame,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+    const image=canvas.toDataURL('image/png');
+    printWindow.document.open();
+    printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>SGO - Guias de Comando</title><style>
+      @page{size:A4 landscape;margin:6mm}
+      html,body{margin:0;width:100%;height:100%;background:#fff}
+      .page{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+      img{display:block;max-width:100%;max-height:100%;object-fit:contain}
+    </style></head><body><div class="page"><img src="${image}" alt="Ficha SGO"></div><script>window.onload=()=>setTimeout(()=>{window.focus();window.print();},250);<\/script></body></html>`);
+    printWindow.document.close();
+  }catch(error){
+    printWindow.document.open();
+    printWindow.document.write('<p>Não foi possível preparar o PDF. Tente novamente.</p>');
+    printWindow.document.close();
+    console.error(error);
+  }finally{
+    frame.remove();
+  }
 }
 </script>
 <script>
@@ -1549,5 +1651,42 @@ window.addEventListener('load', () => {
     patchCanvas();
     loadAll();
 });
+</script>
+<script>
+/* Instalação PWA: o botão só aparece quando o Android permite instalar. */
+let deferredInstallPrompt;
+const installButton = document.getElementById('installBtn');
+const installHomeButton = document.getElementById('installHomeBtn');
+
+function setInstallButtonsVisible(visible) {
+  installButton.style.display = visible ? 'inline-block' : 'none';
+  installHomeButton.style.display = visible ? 'inline-block' : 'none';
+}
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  setInstallButtonsVisible(true);
+});
+
+async function installApp() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  setInstallButtonsVisible(false);
+}
+
+installButton.addEventListener('click', installApp);
+installHomeButton.addEventListener('click', installApp);
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  setInstallButtonsVisible(false);
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
+}
 </script></body>
 </html>

@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "SGO — Guias de Comando",
+  "short_name": "SGO Guias",
+  "description": "Guias de comando do Sistema de Gestão de Operações.",
+  "lang": "pt-PT",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#b0b0b0",
+  "theme_color": "#1c1c1c",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
