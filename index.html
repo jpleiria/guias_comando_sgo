@@ -32,6 +32,11 @@ header strong{font-size:13px;letter-spacing:1px;text-transform:uppercase}
 .export-capture{background:#fff;width:1140px;padding:0;color:#000}
 .export-capture-header{background:#1c1c1c;color:#fff;padding:10px 14px;text-align:center;font-size:11px;line-height:1.45;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
 .export-capture-footer{padding:8px 12px;text-align:center;font-size:9px;line-height:1.4;color:#555;border-top:1px solid #bbb}
+.photo-item{position:relative;min-width:0}
+.photo-item img{width:100%;aspect-ratio:4/3;object-fit:cover;border:.5px solid #000;display:block}
+.photo-remove{position:absolute;top:3px;right:3px;width:23px;height:23px;border:0;border-radius:50%;background:rgba(198,40,40,.94);color:#fff;font:700 17px/20px Arial;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.45)}
+.photo-remove:hover{background:#8e0000}
+.export-capture .photo-remove{display:none!important}
 
 /* HOME */
 .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:620px;margin:0 auto}
@@ -1492,11 +1497,16 @@ document.getElementById('camInput').addEventListener('change',function(e){
   if(!area)return;area.style.display='grid';
   Array.from(e.target.files).forEach(file=>{
     const reader=new FileReader();
-    reader.onload=ev=>{const img=document.createElement('img');img.src=ev.target.result;
-      img.style.cssText='width:100%;aspect-ratio:4/3;object-fit:cover;border:0.5px solid #000;display:block';
-      area.appendChild(img);};
+    reader.onload=ev=>{
+      const item=document.createElement('div');item.className='photo-item';
+      const img=document.createElement('img');img.src=ev.target.result;
+      const remove=document.createElement('button');remove.type='button';remove.className='photo-remove';remove.title='Apagar fotografia';remove.setAttribute('aria-label','Apagar fotografia');remove.textContent='×';
+      remove.onclick=()=>{item.remove();if(!area.children.length)area.style.display='none';};
+      item.append(img,remove);area.appendChild(item);
+    };
     reader.readAsDataURL(file);
   });
+  e.target.value='';
 });
 
 // ─── Export JPG ───
