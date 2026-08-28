@@ -40,7 +40,6 @@ header strong{font-size:13px;letter-spacing:1px;text-transform:uppercase}
 /* Na exportação, as áreas de texto tornam-se blocos que crescem com o conteúdo. */
 .export-textarea{white-space:pre-wrap;overflow-wrap:anywhere;color:#000;font-family:inherit;font-size:11px;font-weight:700;line-height:1.4}
 .export-capture .rp-inf .export-textarea{padding:8px;flex:0 0 auto;min-height:0}
-.export-capture .rp-inf{min-height:0}
 .export-capture .rp-top{flex:none}
 .export-capture .export-textarea-ma{padding:5px 7px;line-height:1.5;border-bottom:.5px solid #999}
 
@@ -1525,10 +1524,12 @@ function createExportCapture(ficha){
   clone.classList.add('vis');
   // O html2canvas limita o conteúdo visível de textarea. Na cópia a exportar,
   // substituímos cada textarea por um bloco de texto com altura automática.
-  clone.querySelectorAll('textarea').forEach(textarea=>{
+  const sourceTextareas=ficha.querySelectorAll('textarea');
+  clone.querySelectorAll('textarea').forEach((textarea,index)=>{
     const text=document.createElement('div');
     text.className='export-textarea'+(textarea.id==='ma-info'?' export-textarea-ma':'');
-    text.textContent=textarea.value;
+    // Usamos sempre o valor da ficha original, incluindo texto ainda não guardado.
+    text.textContent=sourceTextareas[index] ? sourceTextareas[index].value : textarea.value;
     textarea.replaceWith(text);
   });
   // Um clone de canvas não inclui o desenho; copiamos cada SITAC para a exportação.
@@ -1540,8 +1541,16 @@ function createExportCapture(ficha){
     }
   });
   frame.appendChild(clone);
-  frame.insertAdjacentHTML('beforeend','<div class="export-capture-footer">SChefe 2ª - João Paulo Pereira<br>CBSLeiria<br>= ver. 2.1 - 2026 =</div>');
+  // A cópia tem de estar no documento para o navegador calcular scrollHeight.
   document.body.appendChild(frame);
+  // A altura do painel tem de incluir o texto completo; caso contrário, o
+  // layout flex da ficha mantém a altura original e corta as últimas linhas.
+  clone.querySelectorAll('.rp-inf').forEach(info=>{
+    const text=info.querySelector('.export-textarea');
+    const header=info.querySelector('.rp-hdr');
+    if(text&&header)info.style.minHeight=(text.scrollHeight+header.offsetHeight)+'px';
+  });
+  frame.insertAdjacentHTML('beforeend','<div class="export-capture-footer">SChefe 2ª - João Paulo Pereira<br>CBSLeiria<br>= ver. 2.1 - 2026 =</div>');
   return frame;
 }
 
