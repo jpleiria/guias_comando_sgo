@@ -37,6 +37,12 @@ header strong{font-size:13px;letter-spacing:1px;text-transform:uppercase}
 .photo-remove{position:absolute;top:3px;right:3px;width:23px;height:23px;border:0;border-radius:50%;background:rgba(198,40,40,.94);color:#fff;font:700 17px/20px Arial;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.45)}
 .photo-remove:hover{background:#8e0000}
 .export-capture .photo-remove{display:none!important}
+/* Na exportação, as áreas de texto tornam-se blocos que crescem com o conteúdo. */
+.export-textarea{white-space:pre-wrap;overflow-wrap:anywhere;color:#000;font-family:inherit;font-size:11px;font-weight:700;line-height:1.4}
+.export-capture .rp-inf .export-textarea{padding:8px;flex:0 0 auto;min-height:0}
+.export-capture .rp-inf{min-height:0}
+.export-capture .rp-top{flex:none}
+.export-capture .export-textarea-ma{padding:5px 7px;line-height:1.5;border-bottom:.5px solid #999}
 
 /* HOME */
 .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:620px;margin:0 auto}
@@ -1517,6 +1523,14 @@ function createExportCapture(ficha){
   frame.innerHTML='<div class="export-capture-header">Autoridade Nacional de Emergência e Proteção Civil — Sistema de Gestão de Operações<br>Companhia Bombeiros Sapadores Leiria</div>';
   const clone=ficha.cloneNode(true);
   clone.classList.add('vis');
+  // O html2canvas limita o conteúdo visível de textarea. Na cópia a exportar,
+  // substituímos cada textarea por um bloco de texto com altura automática.
+  clone.querySelectorAll('textarea').forEach(textarea=>{
+    const text=document.createElement('div');
+    text.className='export-textarea'+(textarea.id==='ma-info'?' export-textarea-ma':'');
+    text.textContent=textarea.value;
+    textarea.replaceWith(text);
+  });
   // Um clone de canvas não inclui o desenho; copiamos cada SITAC para a exportação.
   ficha.querySelectorAll('canvas').forEach((source,index)=>{
     const target=clone.querySelectorAll('canvas')[index];
